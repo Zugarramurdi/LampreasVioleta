@@ -15,6 +15,7 @@ public class ClienteDAO {
     private static final String INSERT_SQL = "INSERT INTO cliente (id, nombre, email) VALUES" + "(?, ?, ?)";
     private static final String SELECT_BY_ID_SQL = "SELECT id, nombre, email FROM cliente WHERE id=?";
     private static final String SELECT_ALL_SQL = "SELECT id, nombre, email FROM cliente ORDER BY id";
+    private static final String DELETE_BY_ID_SQL = "DELETE FROM cliente WHERE id=?";
 
 
     public void insert(Cliente cliente) throws SQLException {
@@ -53,6 +54,13 @@ public class ClienteDAO {
             }
         }
         return out;
+    }
+
+    public void deleteById(int id) throws SQLException {
+        try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(DELETE_BY_ID_SQL)) {
+            ps.setInt(1,id);
+            ps.executeUpdate();
+        }
     }
 
 

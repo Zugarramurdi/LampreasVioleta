@@ -12,28 +12,23 @@ import java.util.Properties;
 public final class DBConnection {
 
     // Localizar
-    private static Properties loadProperties() throws IOException {
+    private static Properties loadProperties() {
         Properties prop = new Properties();
         try (InputStream in = Files.newInputStream(Paths.get("config/db.properties"))) {
             prop.load(in);
+        } catch (IOException e) {
+            System.err.println("No se ha podido leer el fichero properties " + e.getMessage());
         }
         return prop;
     }
 
     public static Connection getConnection() throws SQLException {
-        try {
-            Properties prop = loadProperties();
+        Properties prop = loadProperties();
 
-            String url = prop.getProperty("db.url");
-            String user = prop.getProperty("db.user");
-            String password = prop.getProperty("db.password");
-            return DriverManager.getConnection(url, user, password);
-
-        } catch (IOException ex) {
-            System.err.println("No se ha podido leer properties"+ex.getMessage());
-            return null;
-        }
-
+        String url = prop.getProperty("db.url");
+        String user = prop.getProperty("db.user");
+        String password = prop.getProperty("db.password");
+        return DriverManager.getConnection(url, user, password);
     }
 
 //    private static final String HOST = System.getenv().getOrDefault("PG_HOST", "juanmasegura.com");
@@ -46,7 +41,8 @@ public final class DBConnection {
 //
 //    private static final String URL = "jdbc:postgresql://" + HOST + ":" + PORT + "/" + DB;
 
-    private DBConnection() {}
+    private DBConnection() {
+    }
 
     // Funcion para crear conexion
 //    public static Connection  getConnection() throws SQLException {

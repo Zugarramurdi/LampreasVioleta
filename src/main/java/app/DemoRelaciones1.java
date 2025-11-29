@@ -26,8 +26,6 @@ public class DemoRelaciones1 {
             System.err.println("Algo ha salido mal..."+e.getMessage());
         }
 
-
-
     }
 
     private static void cargaDeDatos(ClienteDAO clienteDAO) throws SQLException {

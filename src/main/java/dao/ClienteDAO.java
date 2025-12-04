@@ -16,7 +16,8 @@ public class ClienteDAO {
     private static final String INSERT_SQL = "INSERT INTO cliente (id, nombre, email) VALUES" + "(?, ?, ?)";
     private static final String SELECT_BY_ID_SQL = "SELECT id, nombre, email FROM cliente WHERE id=?";
     private static final String SELECT_ALL_SQL = "SELECT id, nombre, email FROM cliente ORDER BY id";
-    private static final String DELETE_BY_ID_SQL = "DELETE FROM cliente WHERE id=?";
+    private static final String DELETE_SQL = "DELETE FROM cliente WHERE id=?";
+    private static final String UPDATE_SQL = "UPDATE cliente SET nombre=?, email=? WHERE id=?";
     private static final String SEARCH_SQL = """
                     SELECT id, nombre, email
                     FROM cliente
@@ -45,7 +46,8 @@ public class ClienteDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new Cliente(rs.getInt("id"), rs.getString("nombre"), rs.getString("email"));
+                    return mapRow(rs);
+//                    return new Cliente(rs.getInt("id"), rs.getString("nombre"), rs.getString("email"));
                 }
                 return null;
             }
@@ -58,17 +60,29 @@ public class ClienteDAO {
         List<Cliente> out = new ArrayList<>();
         try (Connection con = DBConnection.getConnection();PreparedStatement ps = con.prepareStatement(SELECT_ALL_SQL); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Cliente c = new Cliente(rs.getInt("id"), rs.getString("nombre"), rs.getString("email"));
-                out.add(c);
+//                Cliente c = new Cliente(rs.getInt("id"), rs.getString("nombre"), rs.getString("email"));
+                out.add(mapRow(rs));
             }
         }
         return out;
     }
 
-    public void deleteById(int id) throws SQLException {
-        try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(DELETE_BY_ID_SQL)) {
+    public int Update(Cliente c) throws SQLException {
+        try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(UPDATE_SQL)) {
+            ps.setString(1, c.getNombre());
+            ps.setString(2, c.getEmail());
+            ps.setInt(3, c.getId());
+
+            return ps.executeUpdate();
+        }
+
+    }
+
+    public int deleteById(int id) throws SQLException {
+        try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(DELETE_SQL)) {
             ps.setInt(1,id);
-            ps.executeUpdate();
+
+            return ps.executeUpdate();
         }
     }
 

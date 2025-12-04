@@ -13,6 +13,7 @@ public class Cliente {
     private Integer id;            // PK
     private String nombre;
     private String email;
+    private Integer idComercial;
 
     // 1:1
     private DetalleCliente detalle; // puede ser null si aún no hay detalle
@@ -24,6 +25,9 @@ public class Cliente {
     public Cliente(Integer id, String nombre, String email) {
         this.id = id; this.nombre = nombre; this.email = email;
     }
+    public Cliente(Integer id, String nombre, String email, Integer idComercial) {
+        this.id = id; this.nombre = nombre; this.email = email; this.idComercial = idComercial;
+    }
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -33,6 +37,9 @@ public class Cliente {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public Integer getIdComercial() { return idComercial; }
+    public void setIdComercial(Integer idComercial) { this.idComercial = idComercial; }
 
     public DetalleCliente getDetalle() { return detalle; }
     public void setDetalle(DetalleCliente detalle) { this.detalle = detalle; }

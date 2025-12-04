@@ -17,6 +17,14 @@ public class ClienteDAO {
     private static final String SELECT_BY_ID_SQL = "SELECT id, nombre, email FROM cliente WHERE id=?";
     private static final String SELECT_ALL_SQL = "SELECT id, nombre, email FROM cliente ORDER BY id";
     private static final String DELETE_BY_ID_SQL = "DELETE FROM cliente WHERE id=?";
+    private static final String SEARCH_SQL = """
+                    SELECT id, nombre, email
+                    FROM cliente
+                    WHERE CAST(id AS TEXT) ILIKE ? 
+                        OR nombre ILIKE ?  
+                        OR email ILIKE ?
+                    ORDER BY id                    
+                    """;
 
 
     public void insert(Cliente cliente) throws SQLException {
@@ -62,6 +70,39 @@ public class ClienteDAO {
             ps.setInt(1,id);
             ps.executeUpdate();
         }
+    }
+
+    public List<Cliente> search(String filtro) throws SQLException {
+
+        String patron = "%" + filtro + "%";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement pst = con.prepareStatement(SEARCH_SQL)) {
+            pst.setString(1, patron);
+            pst.setString(2, patron);
+            pst.setString(3, patron);
+
+            List<Cliente> out = new ArrayList<>();
+
+            try(ResultSet rs = pst.executeQuery()){
+
+                while (rs.next()){
+                    out.add(mapRow(rs));
+                }
+            }
+            return out;
+        }
+    }
+
+    private Cliente mapRow(ResultSet rs) throws SQLException {
+
+        Cliente c = new Cliente(
+                rs.getInt("id"),
+                rs.getString("nombre"),
+                rs.getString("email")
+        );
+
+        return c;
     }
 
 

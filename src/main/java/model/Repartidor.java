@@ -42,14 +42,14 @@ public class Repartidor {
     private Integer id;
     private String nombre;
     private String telefono;
-    private Integer matricula;
+    private String matricula;
 
 
     // 1:N
     private List<Pedido> pedidos = new ArrayList<>();
 
     public Repartidor(){}
-    public Repartidor(Integer id, String nombre, String telefono, Integer matricula) {
+    public Repartidor(Integer id, String nombre, String telefono, String matricula) {
         this.id = id; this.nombre = nombre; this.telefono = telefono; this.matricula = matricula;
     }
 
@@ -77,11 +77,11 @@ public class Repartidor {
         this.telefono = telefono;
     }
 
-    public Integer getMatricula() {
+    public String getMatricula() {
         return matricula;
     }
 
-    public void setMatricula(Integer matricula) {
+    public void setMatricula(String matricula) {
         this.matricula = matricula;
     }
 

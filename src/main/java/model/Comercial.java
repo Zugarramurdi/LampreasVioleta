@@ -43,14 +43,15 @@ public class Comercial {
     private Integer id;
     private String nombre;
     private String telefono;
+    private String email;
 
 
     // 1:N
     private List<Cliente> clientes = new ArrayList<>();
 
     public Comercial() {}
-    public Comercial(Integer id, String nombre, String telefono) {
-        this.id = id; this.nombre = nombre; this.telefono = telefono;
+    public Comercial(Integer id, String nombre, String telefono, String email) {
+        this.id = id; this.nombre = nombre; this.telefono = telefono;  this.email = email;
     }
 
     public Integer getId() {
@@ -76,6 +77,9 @@ public class Comercial {
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
+
+    public String getEmail() {return email;}
+    public void setEmail(String email) {this.email = email;}
 
     public List<Cliente> getClientes() {
         return clientes;

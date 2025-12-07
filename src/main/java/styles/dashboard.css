@@ -1,0 +1,115 @@
+/**************  FONDO GENERAL DE LA APP  **************/
+.dashboard-root {
+    -fx-background-color: #050814;
+}
+
+/**************  SIDEBAR  **************/
+.sidebar-inner {
+    -fx-background-color: #0b1020;
+    -fx-border-color: #1f6feb;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 20;
+}
+
+.sidebar-title {
+    -fx-text-fill: #e5f1ff;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/**************  BOTONES (ESTILO GENERAL)  **************/
+.button {
+    -fx-background-radius: 18;
+    -fx-padding: 6 14 6 14;
+    -fx-background-color: #111827;
+    -fx-text-fill: #e5e7eb;
+    -fx-border-color: #374151;
+    -fx-border-width: 1;
+}
+
+/**************  BOTONES DEL MENÚ LATERAL  **************/
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #1f6feb;
+    -fx-border-width: 1.5;
+    -fx-text-fill: #e5f1ff;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-padding: 8 16 8 16;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #1f6feb33;
+}
+
+.sidebar-button:pressed {
+    -fx-background-color: #1f6feb66;
+}
+
+/**************  CONTENEDOR CENTRAL  **************/
+.content-wrapper {
+    -fx-background-color: #050814;
+    -fx-border-color: #1f6feb;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 10;
+}
+
+/**************  TABLEVIEW OSCURO  **************/
+.table-view {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: #0c1222;
+    -fx-table-cell-border-color: #1e293b;
+    -fx-padding: 5;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #111827;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-size: 28px;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #9cc4ff;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #0c1222;
+    -fx-text-fill: #e5e7eb;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #0a101e;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #1f6feb66;
+    -fx-text-fill: #ffffff;
+}
+
+/**************  FORMULARIOS  **************/
+.label {
+    -fx-text-fill: #e5e7eb;
+}
+
+.text-field {
+    -fx-background-color: #020617, #020617, #020617;
+    -fx-text-fill: #e5e7eb;
+    -fx-prompt-text-fill: #6b7280;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #1e293b;
+    -fx-border-width: 1;
+}

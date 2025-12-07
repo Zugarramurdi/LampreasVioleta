@@ -50,8 +50,8 @@ public class Comercial {
     private List<Cliente> clientes = new ArrayList<>();
 
     public Comercial() {}
-    public Comercial(Integer id, String nombre, String telefono, String email) {
-        this.id = id; this.nombre = nombre; this.telefono = telefono;  this.email = email;
+    public Comercial(Integer id, String nombre, String email, String telefono) {
+        this.id = id; this.nombre = nombre;  this.email = email; this.telefono = telefono;
     }
     public Comercial(int id,String nombre, String email){
         this.id = id; this.nombre = nombre; this.email = email;

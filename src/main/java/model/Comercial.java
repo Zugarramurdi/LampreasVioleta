@@ -53,6 +53,9 @@ public class Comercial {
     public Comercial(Integer id, String nombre, String telefono, String email) {
         this.id = id; this.nombre = nombre; this.telefono = telefono;  this.email = email;
     }
+    public Comercial(int id,String nombre, String email){
+        this.id = id; this.nombre = nombre; this.email = email;
+    }
 
     public Integer getId() {
         return id;

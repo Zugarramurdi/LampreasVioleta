@@ -1,7 +1,7 @@
 package app;
 
-import dao.ClienteDAO;
-import model.Cliente;
+import dao.ComercialDAO;
+import model.Comercial;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,34 +17,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Vista JavaFX para gestionar clientes.
+ * Vista JavaFX para gestionar comercials.
  *
- * Versión preparada para trabajar más adelante con DetalleCliente,
+ * Versión preparada para trabajar más adelante con DetalleComercial,
  * pero de momento:
- *  - SOLO usa ClienteDAO (insert, findById, findAll).
- *  - La tabla muestra únicamente datos de Cliente (id, nombre, email).
+ *  - SOLO usa ComercialDAO (insert, findById, findAll).
+ *  - La tabla muestra únicamente datos de Comercial (id, nombre, email).
  *  - Los campos de detalle (dirección, teléfono, notas) se muestran en el
  *    formulario, pero aún NO se guardan en BD.
  *
- * Cuando exista DetalleClienteDAO, podrás:
- *  - Cargar el detalle al seleccionar un cliente.
- *  - Guardar/actualizar detalle junto con el cliente.
- *  - Borrar detalle cuando borres un cliente.
+ * Cuando exista DetalleComercialDAO, podrás:
+ *  - Cargar el detalle al seleccionar un comercial.
+ *  - Guardar/actualizar detalle junto con el comercial.
+ *  - Borrar detalle cuando borres un comercial.
  */
 public class ComercialesView {
 
     private final BorderPane root = new BorderPane();
 
     // Tabla y datos
-    private final TableView<Cliente> tabla = new TableView<>();
-    private final ObservableList<Cliente> datos = FXCollections.observableArrayList();
+    private final TableView<Comercial> tabla = new TableView<>();
+    private final ObservableList<Comercial> datos = FXCollections.observableArrayList();
 
-    // Campos de formulario (Cliente)
+    // Campos de formulario (Comercial)
     private final TextField txtId = new TextField();
     private final TextField txtNombre = new TextField();
     private final TextField txtEmail = new TextField();
 
-    // Campos de formulario (DetalleCliente) – por ahora solo visuales
+    // Campos de formulario (DetalleComercial) – por ahora solo visuales
     private final TextField txtDireccion = new TextField();
     private final TextField txtTelefono  = new TextField();
     private final TextField txtNotas     = new TextField();
@@ -61,13 +61,13 @@ public class ComercialesView {
     private final Button    btnLimpiarBusqueda = new Button("Limpiar");
 
     // DAO (acceso a BD)
-    private final ClienteDAO clienteDAO = new ClienteDAO();
+    private final ComercialDAO comercialDAO = new ComercialDAO();
 
     public ComercialesView() {
         configurarTabla();
         configurarFormulario();
         configurarEventos();
-        recargarDatos(); // al iniciar la vista cargamos los clientes
+        recargarDatos(); // al iniciar la vista cargamos los comercials
     }
 
     public Parent getRoot() {
@@ -79,28 +79,28 @@ public class ComercialesView {
        ========================================================= */
 
     private void configurarTabla() {
-        TableColumn<Cliente, Number> colId = new TableColumn<>("ID");
+        TableColumn<Comercial, Number> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleIntegerProperty(c.getValue().getId()));
 
-        TableColumn<Cliente, String> colNombre = new TableColumn<>("Nombre");
+        TableColumn<Comercial, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
 
-        TableColumn<Cliente, String> colEmail = new TableColumn<>("Email");
+        TableColumn<Comercial, String> colEmail = new TableColumn<>("Email");
         colEmail.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(c.getValue().getEmail()));
 
-        // ===== Columnas “placeholder” para DetalleCliente =====
-        TableColumn<Cliente, String> colDireccion = new TableColumn<>("Dirección");
+        // ===== Columnas “placeholder” para DetalleComercial =====
+        TableColumn<Comercial, String> colDireccion = new TableColumn<>("Dirección");
         colDireccion.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(""));
 
-        TableColumn<Cliente, String> colTelefono = new TableColumn<>("Teléfono");
+        TableColumn<Comercial, String> colTelefono = new TableColumn<>("Teléfono");
         colTelefono.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(""));
 
-        TableColumn<Cliente, String> colNotas = new TableColumn<>("Notas");
+        TableColumn<Comercial, String> colNotas = new TableColumn<>("Notas");
         colNotas.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(""));
 
@@ -117,7 +117,7 @@ public class ComercialesView {
         form.setHgap(10);
         form.setVgap(10);
 
-        // ----- Cliente -----
+        // ----- Comercial -----
         txtId.setPromptText("ID (entero)");
         txtNombre.setPromptText("Nombre");
         txtEmail.setPromptText("Email");
@@ -129,7 +129,7 @@ public class ComercialesView {
         form.add(new Label("Email:"), 0, 2);
         form.add(txtEmail, 1, 2);
 
-        // ----- DetalleCliente (solo UI, sin BD de momento) -----
+        // ----- DetalleComercial (solo UI, sin BD de momento) -----
         txtDireccion.setPromptText("Dirección");
         txtTelefono.setPromptText("Teléfono");
         txtNotas.setPromptText("Notas");
@@ -162,14 +162,14 @@ public class ComercialesView {
         // Cuando seleccionamos una fila en la tabla, pasamos los datos al formulario
         tabla.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
             if (newSel != null) {
-                // Cliente
+                // Comercial
                 txtId.setText(String.valueOf(newSel.getId()));
                 txtNombre.setText(newSel.getNombre());
                 txtEmail.setText(newSel.getEmail());
                 txtId.setDisable(true); // al editar, de momento, no dejamos cambiar el ID
 
-                // DetalleCliente (cuando exista DetalleClienteDAO se cargará desde BD)
-                // TODO: cuando implementéis DetalleClienteDAO, aquí:
+                // DetalleComercial (cuando exista DetalleComercialDAO se cargará desde BD)
+                // TODO: cuando implementéis DetalleComercialDAO, aquí:
                 //   - detalleDAO.findById(newSel.getId())
                 //   - rellenar txtDireccion, txtTelefono, txtNotas con sus valores
                 txtDireccion.clear();
@@ -180,16 +180,16 @@ public class ComercialesView {
 
         btnNuevo.setOnAction(e -> limpiarFormulario());
 
-        btnGuardar.setOnAction(e -> guardarCliente());
+        btnGuardar.setOnAction(e -> guardarComercial());
 
-        btnBorrar.setOnAction(e -> borrarClienteSeleccionado());
+        btnBorrar.setOnAction(e -> borrarComercialSeleccionado());
 
         btnRecargar.setOnAction(e -> {
             txtBuscar.clear();
             recargarDatos();
         });
 
-        btnBuscar.setOnAction(e -> buscarClientesEnBBDD());
+        btnBuscar.setOnAction(e -> buscarComercialsEnBBDD());
 
         btnLimpiarBusqueda.setOnAction(e -> {
             txtBuscar.clear();
@@ -198,18 +198,18 @@ public class ComercialesView {
     }
 
     /* =========================================================
-       LÓGICA DE NEGOCIO (usando ClienteDAO actual)
+       LÓGICA DE NEGOCIO (usando ComercialDAO actual)
        ========================================================= */
 
     /**
-     * Carga todos los clientes desde la BD usando ClienteDAO.findAll()
+     * Carga todos los comercials desde la BD usando ComercialDAO.findAll()
      */
     private void recargarDatos() {
         try {
-            List<Cliente> lista = clienteDAO.findAll();
+            List<Comercial> lista = comercialDAO.findAll();
             datos.setAll(lista);
         } catch (SQLException e) {
-            mostrarError("Error al cargar clientes", e);
+            mostrarError("Error al cargar comercials", e);
         }
     }
 
@@ -217,10 +217,10 @@ public class ComercialesView {
      * Búsqueda de momento hecha EN MEMORIA.
      *
      * Se carga toda la lista (findAll) y se filtra con streams.
-     * Más adelante se puede cambiar para que use ClienteDAO.search()
+     * Más adelante se puede cambiar para que use ComercialDAO.search()
      * cuando lo implementéis.
      */
-    private void buscarClientesEnMemoria() {
+    private void buscarComercialsEnMemoria() {
         String filtro = txtBuscar.getText().trim();
         if (filtro.isEmpty()) {
             recargarDatos();
@@ -228,10 +228,10 @@ public class ComercialesView {
         }
 
         try {
-            List<Cliente> lista = clienteDAO.findAll();
+            List<Comercial> lista = comercialDAO.findAll();
             String f = filtro.toLowerCase();
 
-            List<Cliente> filtrados = lista.stream()
+            List<Comercial> filtrados = lista.stream()
                     .filter(c ->
                             String.valueOf(c.getId()).contains(f) ||
                                     c.getNombre().toLowerCase().contains(f) ||
@@ -241,12 +241,12 @@ public class ComercialesView {
 
             datos.setAll(filtrados);
         } catch (SQLException e) {
-            mostrarError("Error al buscar clientes", e);
+            mostrarError("Error al buscar comercials", e);
         }
     }
 
 
-    private void buscarClientesEnBBDD(){
+    private void buscarComercialsEnBBDD(){
         String filtro = txtBuscar.getText().trim();
 
         if ((filtro.isEmpty())){
@@ -255,7 +255,7 @@ public class ComercialesView {
         }
 
         try {
-            List<Cliente> lista = clienteDAO.search(filtro);
+            List<Comercial> lista = comercialDAO.search(filtro);
             datos.setAll(lista);
 
         } catch (SQLException e){
@@ -276,16 +276,16 @@ public class ComercialesView {
     }
 
     /**
-     * Guardar cliente:
-     *  - Si no existe en la BD → INSERT usando ClienteDAO.insert()
+     * Guardar comercial:
+     *  - Si no existe en la BD → INSERT usando ComercialDAO.insert()
      *  - Si existe → por ahora solo muestra un aviso.
      *
      * NOTA:
      *  - Los datos de detalle (dirección, teléfono, notas) todavía NO se guardan.
-     *  - Cuando tengáis DetalleClienteDAO y/o ClienteService, aquí se podrá:
+     *  - Cuando tengáis DetalleComercialDAO y/o ComercialService, aquí se podrá:
      *      * insertar/actualizar también el detalle en una transacción.
      */
-    private void guardarCliente() {
+    private void guardarComercial() {
         // Validación rápida
         if (txtId.getText().isBlank() ||
                 txtNombre.getText().isBlank() ||
@@ -304,33 +304,33 @@ public class ComercialesView {
             return;
         }
 
-        Cliente c = new Cliente(id,
+        Comercial c = new Comercial(id,
                 txtNombre.getText().trim(),
                 txtEmail.getText().trim());
 
-        // En el futuro podrías crear aquí también un DetalleCliente con:
+        // En el futuro podrías crear aquí también un DetalleComercial con:
         //   id, txtDireccion.getText(), txtTelefono.getText(), txtNotas.getText()
-        // y pasarlo a un ClienteService.crearClienteConDetalle(...)
+        // y pasarlo a un ComercialService.crearComercialConDetalle(...)
 
         try {
-            Cliente existente = clienteDAO.findById(id);
+            Comercial existente = comercialDAO.findById(id);
 
             if (existente == null) {
                 // No existe → INSERT real
-                clienteDAO.insert(c);
+                comercialDAO.insert(c);
 
-                // TODO: cuando exista DetalleClienteDAO, aquí insertar también el detalle.
+                // TODO: cuando exista DetalleComercialDAO, aquí insertar también el detalle.
                 //  Ejemplo futuro:
-                //  detalleDAO.insert(new DetalleCliente(id, dir, tlf, notas));
+                //  detalleDAO.insert(new DetalleComercial(id, dir, tlf, notas));
 
-                mostrarInfo("Insertado", "Cliente creado correctamente.");
+                mostrarInfo("Insertado", "Comercial creado correctamente.");
             } else {
                 // Ya existe → aquí en el futuro iría un UPDATE.
-                // TODO: cuando implementéis ClienteDAO.update(Cliente),
-                //  y DetalleClienteDAO.update(DetalleCliente),
-                //  llamad aquí a esos métodos (idealmente a través de ClienteService).
+                // TODO: cuando implementéis ComercialDAO.update(Comercial),
+                //  y DetalleComercialDAO.update(DetalleComercial),
+                //  llamad aquí a esos métodos (idealmente a través de ComercialService).
                 mostrarAlerta("Actualizar pendiente",
-                        "El cliente ya existe.\n" +
+                        "El comercial ya existe.\n" +
                                 "Más adelante aquí haremos UPDATE desde el DAO/Service.");
             }
 
@@ -338,57 +338,57 @@ public class ComercialesView {
             limpiarFormulario();
 
         } catch (SQLException e) {
-            mostrarError("Error al guardar cliente", e);
+            mostrarError("Error al guardar comercial", e);
         }
     }
 
     /**
-     * Borrar cliente seleccionado.
+     * Borrar comercial seleccionado.
      * De momento solo muestra un aviso con un TODO.
      *
-     * Cuando implementéis ClienteDAO.deleteById(int id),
+     * Cuando implementéis ComercialDAO.deleteById(int id),
      * se puede llamar aquí a ese método.
      *
-     * Y cuando exista DetalleClienteDAO, sería buena idea borrar primero
-     * el detalle del cliente y luego el cliente (o usar ON DELETE CASCADE
+     * Y cuando exista DetalleComercialDAO, sería buena idea borrar primero
+     * el detalle del comercial y luego el comercial (o usar ON DELETE CASCADE
      * + transacción en un Service).
      */
-    private void borrarClienteSeleccionado() {
-        Cliente sel = tabla.getSelectionModel().getSelectedItem();
+    private void borrarComercialSeleccionado() {
+        Comercial sel = tabla.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            mostrarAlerta("Sin selección", "Selecciona un cliente en la tabla.");
+            mostrarAlerta("Sin selección", "Selecciona un comercial en la tabla.");
             return;
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmar borrado");
-        confirm.setHeaderText("¿Eliminar cliente?");
-        confirm.setContentText("Se borrará el cliente con ID " + sel.getId());
+        confirm.setHeaderText("¿Eliminar comercial?");
+        confirm.setContentText("Se borrará el comercial con ID " + sel.getId());
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
             return;
         }
 
-        // TODO: implementar ClienteDAO.deleteById(int id) y llamarlo aquí.
-        // TODO futuro: cuando haya DetalleClienteDAO, borrar primero detalle,
-        //  después cliente, o delegarlo todo a ClienteService.deleteClienteCompleto(id).
+        // TODO: implementar ComercialDAO.deleteById(int id) y llamarlo aquí.
+        // TODO futuro: cuando haya DetalleComercialDAO, borrar primero detalle,
+        //  después comercial, o delegarlo todo a ComercialService.deleteComercialCompleto(id).
 
         mostrarAlerta("Borrado pendiente",
-                "Aún no existe deleteById en ClienteDAO.\n" +
+                "Aún no existe deleteById en ComercialDAO.\n" +
                         "Cuando lo implementemos, aquí se llamará al método.");
 
         // Ejemplo futuro:
         /*
         try {
-            int borradas = clienteDAO.deleteById(sel.getId());
+            int borradas = comercialDAO.deleteById(sel.getId());
             if (borradas > 0) {
-                mostrarInfo("Borrado", "Cliente eliminado.");
+                mostrarInfo("Borrado", "Comercial eliminado.");
                 recargarDatos();
                 limpiarFormulario();
             } else {
-                mostrarAlerta("No borrado", "No se encontró el cliente en la BD.");
+                mostrarAlerta("No borrado", "No se encontró el comercial en la BD.");
             }
         } catch (SQLException e) {
-            mostrarError("Error al borrar cliente", e);
+            mostrarError("Error al borrar comercial", e);
         }
         */
     }

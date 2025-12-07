@@ -2,7 +2,7 @@ package dao;
 
 import DB.DBConnection;
 import model.Comercial;
-import model.Repartidor;
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,18 +13,18 @@ import java.util.List;
 
 public class ComercialDAO {
 
-    private static final String INSERT_SQL = "INSERT INTO repartidor (id, nombre, telefono, email) VALUES" + "(?,?,?,?)";
-    private static final String SELECT_BY_ID_SQL = "SELECT id, nombre, telefono, email FROM repartidor WHERE id=?";
-    private static final String SELECT_ALL_SQL = "SELECT id, nombre, telefono, email FROM repartidor ORDER BY id";
-    private static final String DELETE_SQL = "DELETE FROM repartidor WHERE id=?";
-    private static final String UPDATE_SQL = "UPDATE repartidor SET nombre=?, telefono=?, email=? WHERE id=?";
+    private static final String INSERT_SQL = "INSERT INTO comercial (id, nombre, email, telefono) VALUES" + "(?,?,?,?)";
+    private static final String SELECT_BY_ID_SQL = "SELECT id, nombre, email, telefono FROM comercial WHERE id=?";
+    private static final String SELECT_ALL_SQL = "SELECT id, nombre, email, telefono FROM comercial ORDER BY id";
+    private static final String DELETE_SQL = "DELETE FROM comercial WHERE id=?";
+    private static final String UPDATE_SQL = "UPDATE comercial SET nombre=?, email=?, telefono=? WHERE id=?";
     private static final String SEARCH_SQL = """
-            SELECT id, nombre, telefono, email
-            FROM repartidor
+            SELECT id, nombre, email, telefono
+            FROM comercial
             WHERE CAST (id AS TEXT) ILIKE ?
                 OR nombre ILIKE ?
-                OR telefono ILIKE ?
                 OR email ILIKE ?
+                OR telefono ILIKE ?
             ORDER BY id
             """;
 
@@ -32,8 +32,8 @@ public class ComercialDAO {
         try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(INSERT_SQL)) {
             ps.setInt(1, comercial.getId());
             ps.setString(2, comercial.getNombre());
-            ps.setString(3, comercial.getTelefono());
-            ps.setString(4, comercial.getEmail());
+            ps.setString(3, comercial.getEmail());
+            ps.setString(4, comercial.getTelefono());
 
             ps.executeUpdate();
         }
@@ -65,8 +65,8 @@ public class ComercialDAO {
     public int Update(Comercial comercial) throws SQLException {
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(UPDATE_SQL)) {
             ps.setString(1, comercial.getNombre());
-            ps.setString(2, comercial.getTelefono());
-            ps.setString(3, comercial.getEmail());
+            ps.setString(2, comercial.getEmail());
+            ps.setString(3, comercial.getTelefono());
 
             return ps.executeUpdate();
         }
@@ -103,8 +103,8 @@ public class ComercialDAO {
         Comercial c = new Comercial(
           rs.getInt("id"),
           rs.getString("nombre"),
-          rs.getString("telefono"),
-          rs.getString("email")
+          rs.getString("email"),
+          rs.getString("telefono")
         );
         return c;
     }

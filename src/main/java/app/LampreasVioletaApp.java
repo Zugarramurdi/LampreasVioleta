@@ -12,6 +12,12 @@ public class LampreasVioletaApp extends Application {
         stage.setTitle("Gestión de Clientes - Lampreas Violeta");
         stage.setScene(scene);
         stage.show();
+
+//        ComercialesView vistaComerciales = new ComercialesView();
+//        Scene scene2 = new Scene(vistaComerciales.getRoot(), 900, 600);
+//        stage.setTitle("Gestión de Comerciales - Lampreas Violeta");
+//        stage.setScene(scene2);
+//        stage.show();
     }
 
     public static void main(String[] args) {

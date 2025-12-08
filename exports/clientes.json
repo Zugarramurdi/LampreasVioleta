@@ -1,0 +1,22 @@
+[ {
+  "id" : 1,
+  "nombre" : "Roberto Rodriguez",
+  "email" : "robert@rodri.com",
+  "idComercial" : null,
+  "detalle" : null,
+  "pedidos" : [ ]
+}, {
+  "id" : 2,
+  "nombre" : "Andrea Valenti",
+  "email" : "andrea@valenti.com",
+  "idComercial" : null,
+  "detalle" : null,
+  "pedidos" : [ ]
+}, {
+  "id" : 3,
+  "nombre" : "Pepito",
+  "email" : "pepito@grillo.com",
+  "idComercial" : null,
+  "detalle" : null,
+  "pedidos" : [ ]
+} ]

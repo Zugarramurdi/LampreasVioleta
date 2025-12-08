@@ -11,7 +11,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import services.ClienteService;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +57,7 @@ public class ClientesView {
     private final Button btnGuardar  = new Button("Guardar");
     private final Button btnBorrar   = new Button("Borrar");
     private final Button btnRecargar = new Button("Recargar");
+    private final Button btnExportarJson = new Button("Exportar JSON");
 
     // Búsqueda
     private final TextField txtBuscar          = new TextField();
@@ -62,6 +66,9 @@ public class ClientesView {
 
     // DAO (acceso a BD)
     private final ClienteDAO clienteDAO = new ClienteDAO();
+
+    // Service (exportacion a JSON)
+    private final ClienteService clienteService = new ClienteService();
 
     public ClientesView() {
         configurarTabla();
@@ -142,7 +149,7 @@ public class ClientesView {
         form.add(txtNotas, 1, 5);
 
         // Zona botones CRUD
-        HBox botonesCrud = new HBox(10, btnNuevo, btnGuardar, btnBorrar, btnRecargar);
+        HBox botonesCrud = new HBox(10, btnNuevo, btnGuardar, btnBorrar, btnRecargar, btnExportarJson);
         botonesCrud.setPadding(new Insets(10, 0, 0, 0));
 
         // Zona de búsqueda
@@ -195,6 +202,8 @@ public class ClientesView {
             txtBuscar.clear();
             recargarDatos();
         });
+
+        btnExportarJson.setOnAction(e -> exportarClientesJson());
     }
 
     /* =========================================================
@@ -391,6 +400,19 @@ public class ClientesView {
             mostrarError("Error al borrar cliente", e);
         }
         */
+    }
+
+    private void exportarClientesJson(){
+        try{
+            // nombre de fichero
+            File destino = clienteService.exportarClientesAJson("clientes.json");
+            String ruta = destino.getAbsolutePath();
+
+            mostrarInfo("Exportacion correcta", "Se ha generado el fichero clientes.json en "+ruta);
+
+        }catch(SQLException | IOException e){
+            mostrarError("Error al exportar clientes",e);
+        }
     }
 
     /* =========================================================

@@ -13,6 +13,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import model.DetalleCliente;
+import services.ClienteDetalle;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -70,6 +71,7 @@ public class ClientesView {
 
     // DAO (acceso a BD)
     private final ClienteDAO clienteDAO = new ClienteDAO();
+    private final ClienteDetalle clienteService = new ClienteDetalle();
 
     public ClientesView() {
         configurarTabla();
@@ -356,9 +358,7 @@ public class ClientesView {
 
             if (existente == null) {
 
-                clienteDAO.insert(c);
-
-                detalleClienteDAO.insert(d);
+                clienteService.guardarClienteCompleto(c, d);
 
                 mostrarInfo("Insertado",
                         "Cliente y detalle creados (sin transacción).");

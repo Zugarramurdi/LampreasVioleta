@@ -403,12 +403,13 @@ public class ClientesView {
     }
 
     private void exportarClientesJson(){
+        String nombreFichero = "clientes.json";
         try{
             // nombre de fichero
-            File destino = clienteService.exportarClientesAJson("clientes.json");
+            File destino = clienteService.exportarClientesAJson(nombreFichero);
             String ruta = destino.getAbsolutePath();
 
-            mostrarInfo("Exportacion correcta", "Se ha generado el fichero clientes.json en "+ruta);
+            mostrarInfo("Exportacion correcta", "Se ha generado el fichero "+nombreFichero+" en "+ruta);
 
         }catch(SQLException | IOException e){
             mostrarError("Error al exportar clientes",e);

@@ -16,7 +16,7 @@ public class DashboardView {
     // Vistas que ya tienes
     private final ClientesView clientesView = new ClientesView();
     private final ComercialesView comercialesView = new ComercialesView();
-//    private final RepartidoresView repartidoresView = new RepartidoresView(); // nueva
+    private final RepartidoresView repartidoresView = new RepartidoresView(); // nueva
 
     public DashboardView() {
         initLayout();
@@ -83,18 +83,20 @@ public class DashboardView {
         // =================== EVENTOS BOTONES ===================
         btnClientes.setOnAction(e -> showClientes());
         btnComerciales.setOnAction(e -> showComerciales());
-//        btnRepartidores.setOnAction(e -> showRepartidores());
+        btnRepartidores.setOnAction(e -> showRepartidores());
     }
 
     private void showClientes() {
+
         contentPane.setCenter(clientesView.getRoot());
     }
 
     private void showComerciales() {
+
         contentPane.setCenter(comercialesView.getRoot());
     }
 
-//    private void showRepartidores() {
-//        contentPane.setCenter(repartidoresView.getRoot());
-//    }
+    private void showRepartidores() {
+        contentPane.setCenter(repartidoresView.getRoot());
+    }
 }

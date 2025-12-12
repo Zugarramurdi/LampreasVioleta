@@ -1,7 +1,7 @@
 package app;
 
-import dao.ComercialDAO;
-import model.Comercial;
+import dao.RepartidorDAO;
+import model.Repartidor;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import services.ComercialService;
-
+import services.RepartidorService;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,34 +21,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Vista JavaFX para gestionar comercials.
+ * Vista JavaFX para gestionar repartidors.
  *
- * Versión preparada para trabajar más adelante con DetalleComercial,
+ * Versión preparada para trabajar más adelante con DetalleRepartidor,
  * pero de momento:
- *  - SOLO usa ComercialDAO (insert, findById, findAll).
- *  - La tabla muestra únicamente datos de Comercial (id, nombre, email).
+ *  - SOLO usa RepartidorDAO (insert, findById, findAll).
+ *  - La tabla muestra únicamente datos de Repartidor (id, nombre, email).
  *  - Los campos de detalle (dirección, teléfono, notas) se muestran en el
  *    formulario, pero aún NO se guardan en BD.
  *
- * Cuando exista DetalleComercialDAO, podrás:
- *  - Cargar el detalle al seleccionar un comercial.
- *  - Guardar/actualizar detalle junto con el comercial.
- *  - Borrar detalle cuando borres un comercial.
+ * Cuando exista DetalleRepartidorDAO, podrás:
+ *  - Cargar el detalle al seleccionar un repartidor.
+ *  - Guardar/actualizar detalle junto con el repartidor.
+ *  - Borrar detalle cuando borres un repartidor.
  */
-public class ComercialesView {
+public class RepartidoresView {
 
     private final BorderPane root = new BorderPane();
 
     // Tabla y datos
-    private final TableView<Comercial> tabla = new TableView<>();
-    private final ObservableList<Comercial> datos = FXCollections.observableArrayList();
+    private final TableView<Repartidor> tabla = new TableView<>();
+    private final ObservableList<Repartidor> datos = FXCollections.observableArrayList();
 
-    // Campos de formulario (Comercial)
+    // Campos de formulario (Repartidor)
     private final TextField txtId = new TextField();
     private final TextField txtNombre = new TextField();
-    private final TextField txtEmail = new TextField();
+    private final TextField txtMatricula = new TextField();
 
-    // Campos de formulario (DetalleComercial) – por ahora solo visuales
+    // Campos de formulario (DetalleRepartidor) – por ahora solo visuales
     private final TextField txtDireccion = new TextField();
     private final TextField txtTelefono  = new TextField();
     private final TextField txtNotas     = new TextField();
@@ -66,16 +66,16 @@ public class ComercialesView {
     private final Button    btnLimpiarBusqueda = new Button("Limpiar");
 
     // DAO (acceso a BD)
-    private final ComercialDAO comercialDAO = new ComercialDAO();
+    private final RepartidorDAO repartidorDAO = new RepartidorDAO();
 
     // Service (exportacion a JSON)
-    private final ComercialService comercialService = new ComercialService();
+    private final RepartidorService repartidorService = new RepartidorService();
 
-    public ComercialesView() {
+    public RepartidoresView() {
         configurarTabla();
         configurarFormulario();
         configurarEventos();
-        recargarDatos(); // al iniciar la vista cargamos los comercials
+        recargarDatos(); // al iniciar la vista cargamos los repartidors
     }
 
     public Parent getRoot() {
@@ -87,28 +87,28 @@ public class ComercialesView {
        ========================================================= */
 
     private void configurarTabla() {
-        TableColumn<Comercial, Number> colId = new TableColumn<>("ID");
+        TableColumn<Repartidor, Number> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleIntegerProperty(c.getValue().getId()));
 
-        TableColumn<Comercial, String> colNombre = new TableColumn<>("Nombre");
+        TableColumn<Repartidor, String> colNombre = new TableColumn<>("Nombre");
         colNombre.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
 
-        TableColumn<Comercial, String> colEmail = new TableColumn<>("Email");
+        TableColumn<Repartidor, String> colEmail = new TableColumn<>("Matrícula");
         colEmail.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(c.getValue().getEmail()));
+                new javafx.beans.property.SimpleStringProperty(c.getValue().getMatricula()));
 
-        // ===== Columnas “placeholder” para DetalleComercial =====
-        TableColumn<Comercial, String> colDireccion = new TableColumn<>("Dirección");
+        // ===== Columnas “placeholder” para DetalleRepartidor =====
+        TableColumn<Repartidor, String> colDireccion = new TableColumn<>("Dirección");
         colDireccion.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(""));
 
-        TableColumn<Comercial, String> colTelefono = new TableColumn<>("Teléfono");
+        TableColumn<Repartidor, String> colTelefono = new TableColumn<>("Teléfono");
         colTelefono.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(""));
 
-        TableColumn<Comercial, String> colNotas = new TableColumn<>("Notas");
+        TableColumn<Repartidor, String> colNotas = new TableColumn<>("Notas");
         colNotas.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(""));
 
@@ -125,19 +125,19 @@ public class ComercialesView {
         form.setHgap(10);
         form.setVgap(10);
 
-        // ----- Comercial -----
+        // ----- Repartidor -----
         txtId.setPromptText("ID (entero)");
         txtNombre.setPromptText("Nombre");
-        txtEmail.setPromptText("Email");
+        txtMatricula.setPromptText("Matrícula");
 
         form.add(new Label("ID:"), 0, 0);
         form.add(txtId, 1, 0);
         form.add(new Label("Nombre:"), 0, 1);
         form.add(txtNombre, 1, 1);
-        form.add(new Label("Email:"), 0, 2);
-        form.add(txtEmail, 1, 2);
+        form.add(new Label("Matrícula:"), 0, 2);
+        form.add(txtMatricula, 1, 2);
 
-        // ----- DetalleComercial (solo UI, sin BD de momento) -----
+        // ----- DetalleRepartidor (solo UI, sin BD de momento) -----
         txtDireccion.setPromptText("Dirección");
         txtTelefono.setPromptText("Teléfono");
         txtNotas.setPromptText("Notas");
@@ -170,14 +170,14 @@ public class ComercialesView {
         // Cuando seleccionamos una fila en la tabla, pasamos los datos al formulario
         tabla.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
             if (newSel != null) {
-                // Comercial
+                // Repartidor
                 txtId.setText(String.valueOf(newSel.getId()));
                 txtNombre.setText(newSel.getNombre());
-                txtEmail.setText(newSel.getEmail());
+                txtMatricula.setText(newSel.getMatricula());
                 txtId.setDisable(true); // al editar, de momento, no dejamos cambiar el ID
 
-                // DetalleComercial (cuando exista DetalleComercialDAO se cargará desde BD)
-                // TODO: cuando implementéis DetalleComercialDAO, aquí:
+                // DetalleRepartidor (cuando exista DetalleRepartidorDAO se cargará desde BD)
+                // TODO: cuando implementéis DetalleRepartidorDAO, aquí:
                 //   - detalleDAO.findById(newSel.getId())
                 //   - rellenar txtDireccion, txtTelefono, txtNotas con sus valores
                 txtDireccion.clear();
@@ -188,38 +188,38 @@ public class ComercialesView {
 
         btnNuevo.setOnAction(e -> limpiarFormulario());
 
-        btnGuardar.setOnAction(e -> guardarComercial());
+        btnGuardar.setOnAction(e -> guardarRepartidor());
 
-        btnBorrar.setOnAction(e -> borrarComercialSeleccionado());
+        btnBorrar.setOnAction(e -> borrarRepartidorSeleccionado());
 
         btnRecargar.setOnAction(e -> {
             txtBuscar.clear();
             recargarDatos();
         });
 
-        btnBuscar.setOnAction(e -> buscarComercialsEnBBDD());
+        btnBuscar.setOnAction(e -> buscarRepartidorsEnBBDD());
 
         btnLimpiarBusqueda.setOnAction(e -> {
             txtBuscar.clear();
             recargarDatos();
         });
 
-        btnExportarJson.setOnAction(e -> exportarComercialesJson());
+        btnExportarJson.setOnAction(e -> exportarRepartidoresJson());
     }
 
     /* =========================================================
-       LÓGICA DE NEGOCIO (usando ComercialDAO actual)
+       LÓGICA DE NEGOCIO (usando RepartidorDAO actual)
        ========================================================= */
 
     /**
-     * Carga todos los comercials desde la BD usando ComercialDAO.findAll()
+     * Carga todos los repartidors desde la BD usando RepartidorDAO.findAll()
      */
     private void recargarDatos() {
         try {
-            List<Comercial> lista = comercialDAO.findAll();
+            List<Repartidor> lista = repartidorDAO.findAll();
             datos.setAll(lista);
         } catch (SQLException e) {
-            mostrarError("Error al cargar comercials", e);
+            mostrarError("Error al cargar repartidors", e);
         }
     }
 
@@ -227,10 +227,10 @@ public class ComercialesView {
      * Búsqueda de momento hecha EN MEMORIA.
      *
      * Se carga toda la lista (findAll) y se filtra con streams.
-     * Más adelante se puede cambiar para que use ComercialDAO.search()
+     * Más adelante se puede cambiar para que use RepartidorDAO.search()
      * cuando lo implementéis.
      */
-    private void buscarComercialsEnMemoria() {
+    private void buscarRepartidorsEnMemoria() {
         String filtro = txtBuscar.getText().trim();
         if (filtro.isEmpty()) {
             recargarDatos();
@@ -238,25 +238,25 @@ public class ComercialesView {
         }
 
         try {
-            List<Comercial> lista = comercialDAO.findAll();
+            List<Repartidor> lista = repartidorDAO.findAll();
             String f = filtro.toLowerCase();
 
-            List<Comercial> filtrados = lista.stream()
+            List<Repartidor> filtrados = lista.stream()
                     .filter(c ->
                             String.valueOf(c.getId()).contains(f) ||
                                     c.getNombre().toLowerCase().contains(f) ||
-                                    c.getEmail().toLowerCase().contains(f)
+                                    c.getMatricula().toLowerCase().contains(f)
                     )
                     .collect(Collectors.toList());
 
             datos.setAll(filtrados);
         } catch (SQLException e) {
-            mostrarError("Error al buscar comercials", e);
+            mostrarError("Error al buscar repartidors", e);
         }
     }
 
 
-    private void buscarComercialsEnBBDD(){
+    private void buscarRepartidorsEnBBDD(){
         String filtro = txtBuscar.getText().trim();
 
         if ((filtro.isEmpty())){
@@ -265,7 +265,7 @@ public class ComercialesView {
         }
 
         try {
-            List<Comercial> lista = comercialDAO.search(filtro);
+            List<Repartidor> lista = repartidorDAO.search(filtro);
             datos.setAll(lista);
 
         } catch (SQLException e){
@@ -277,7 +277,7 @@ public class ComercialesView {
     private void limpiarFormulario() {
         txtId.clear();
         txtNombre.clear();
-        txtEmail.clear();
+        txtMatricula.clear();
         txtDireccion.clear();
         txtTelefono.clear();
         txtNotas.clear();
@@ -286,20 +286,20 @@ public class ComercialesView {
     }
 
     /**
-     * Guardar comercial:
-     *  - Si no existe en la BD → INSERT usando ComercialDAO.insert()
+     * Guardar repartidor:
+     *  - Si no existe en la BD → INSERT usando RepartidorDAO.insert()
      *  - Si existe → por ahora solo muestra un aviso.
      *
      * NOTA:
      *  - Los datos de detalle (dirección, teléfono, notas) todavía NO se guardan.
-     *  - Cuando tengáis DetalleComercialDAO y/o ComercialService, aquí se podrá:
+     *  - Cuando tengáis DetalleRepartidorDAO y/o RepartidorService, aquí se podrá:
      *      * insertar/actualizar también el detalle en una transacción.
      */
-    private void guardarComercial() {
+    private void guardarRepartidor() {
         // Validación rápida
         if (txtId.getText().isBlank() ||
                 txtNombre.getText().isBlank() ||
-                txtEmail.getText().isBlank()) {
+                txtMatricula.getText().isBlank()) {
 
             mostrarAlerta("Campos obligatorios",
                     "Debes rellenar ID, nombre y email.");
@@ -314,33 +314,33 @@ public class ComercialesView {
             return;
         }
 
-        Comercial c = new Comercial(id,
+        Repartidor c = new Repartidor(id,
                 txtNombre.getText().trim(),
-                txtEmail.getText().trim());
+                txtMatricula.getText().trim());
 
-        // En el futuro podrías crear aquí también un DetalleComercial con:
+        // En el futuro podrías crear aquí también un DetalleRepartidor con:
         //   id, txtDireccion.getText(), txtTelefono.getText(), txtNotas.getText()
-        // y pasarlo a un ComercialService.crearComercialConDetalle(...)
+        // y pasarlo a un RepartidorService.crearRepartidorConDetalle(...)
 
         try {
-            Comercial existente = comercialDAO.findById(id);
+            Repartidor existente = repartidorDAO.findById(id);
 
             if (existente == null) {
                 // No existe → INSERT real
-                comercialDAO.insert(c);
+                repartidorDAO.insert(c);
 
-                // TODO: cuando exista DetalleComercialDAO, aquí insertar también el detalle.
+                // TODO: cuando exista DetalleRepartidorDAO, aquí insertar también el detalle.
                 //  Ejemplo futuro:
-                //  detalleDAO.insert(new DetalleComercial(id, dir, tlf, notas));
+                //  detalleDAO.insert(new DetalleRepartidor(id, dir, tlf, notas));
 
-                mostrarInfo("Insertado", "Comercial creado correctamente.");
+                mostrarInfo("Insertado", "Repartidor creado correctamente.");
             } else {
                 // Ya existe → aquí en el futuro iría un UPDATE.
-                // TODO: cuando implementéis ComercialDAO.update(Comercial),
-                //  y DetalleComercialDAO.update(DetalleComercial),
-                //  llamad aquí a esos métodos (idealmente a través de ComercialService).
+                // TODO: cuando implementéis RepartidorDAO.update(Repartidor),
+                //  y DetalleRepartidorDAO.update(DetalleRepartidor),
+                //  llamad aquí a esos métodos (idealmente a través de RepartidorService).
                 mostrarAlerta("Actualizar pendiente",
-                        "El comercial ya existe.\n" +
+                        "El repartidor ya existe.\n" +
                                 "Más adelante aquí haremos UPDATE desde el DAO/Service.");
             }
 
@@ -348,69 +348,69 @@ public class ComercialesView {
             limpiarFormulario();
 
         } catch (SQLException e) {
-            mostrarError("Error al guardar comercial", e);
+            mostrarError("Error al guardar repartidor", e);
         }
     }
 
     /**
-     * Borrar comercial seleccionado.
+     * Borrar repartidor seleccionado.
      * De momento solo muestra un aviso con un TODO.
      *
-     * Cuando implementéis ComercialDAO.deleteById(int id),
+     * Cuando implementéis RepartidorDAO.deleteById(int id),
      * se puede llamar aquí a ese método.
      *
-     * Y cuando exista DetalleComercialDAO, sería buena idea borrar primero
-     * el detalle del comercial y luego el comercial (o usar ON DELETE CASCADE
+     * Y cuando exista DetalleRepartidorDAO, sería buena idea borrar primero
+     * el detalle del repartidor y luego el repartidor (o usar ON DELETE CASCADE
      * + transacción en un Service).
      */
-    private void borrarComercialSeleccionado() {
-        Comercial sel = tabla.getSelectionModel().getSelectedItem();
+    private void borrarRepartidorSeleccionado() {
+        Repartidor sel = tabla.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            mostrarAlerta("Sin selección", "Selecciona un comercial en la tabla.");
+            mostrarAlerta("Sin selección", "Selecciona un repartidor en la tabla.");
             return;
         }
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmar borrado");
-        confirm.setHeaderText("¿Eliminar comercial?");
-        confirm.setContentText("Se borrará el comercial con ID " + sel.getId());
+        confirm.setHeaderText("¿Eliminar repartidor?");
+        confirm.setContentText("Se borrará el repartidor con ID " + sel.getId());
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
             return;
         }
 
-        // TODO: implementar ComercialDAO.deleteById(int id) y llamarlo aquí.
-        // TODO futuro: cuando haya DetalleComercialDAO, borrar primero detalle,
-        //  después comercial, o delegarlo todo a ComercialService.deleteComercialCompleto(id).
+        // TODO: implementar RepartidorDAO.deleteById(int id) y llamarlo aquí.
+        // TODO futuro: cuando haya DetalleRepartidorDAO, borrar primero detalle,
+        //  después repartidor, o delegarlo todo a RepartidorService.deleteRepartidorCompleto(id).
 
         mostrarAlerta("Borrado pendiente",
-                "Aún no existe deleteById en ComercialDAO.\n" +
+                "Aún no existe deleteById en RepartidorDAO.\n" +
                         "Cuando lo implementemos, aquí se llamará al método.");
 
         // Ejemplo futuro:
         /*
         try {
-            int borradas = comercialDAO.deleteById(sel.getId());
+            int borradas = repartidorDAO.deleteById(sel.getId());
             if (borradas > 0) {
-                mostrarInfo("Borrado", "Comercial eliminado.");
+                mostrarInfo("Borrado", "Repartidor eliminado.");
                 recargarDatos();
                 limpiarFormulario();
             } else {
-                mostrarAlerta("No borrado", "No se encontró el comercial en la BD.");
+                mostrarAlerta("No borrado", "No se encontró el repartidor en la BD.");
             }
         } catch (SQLException e) {
-            mostrarError("Error al borrar comercial", e);
+            mostrarError("Error al borrar repartidor", e);
         }
         */
     }
 
-    private void exportarComercialesJson(){
-        String nombreFichero = "comerciales.json";
+    private void exportarRepartidoresJson(){
+        String nombreFichero = "repartidores.json";
         try{
             // nombre de fichero
-            File destino = comercialService.exportarComercialesAJson(nombreFichero);
+            File destino = repartidorService.exportarRepartidoresAJson(nombreFichero);
             String ruta = destino.getAbsolutePath();
 
-            mostrarInfo("Exportacion correcta", "Se ha generado el fichero "+nombreFichero+ " en "+ruta);
+            mostrarInfo("Exportacion correcta", "Se ha generado el fichero "+nombreFichero+" en "+ruta);
 
         }catch(SQLException | IOException e){
             mostrarError("Error al exportar clientes",e);

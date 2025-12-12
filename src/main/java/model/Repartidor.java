@@ -52,6 +52,9 @@ public class Repartidor {
     public Repartidor(Integer id, String nombre, String telefono, String matricula) {
         this.id = id; this.nombre = nombre; this.telefono = telefono; this.matricula = matricula;
     }
+    public Repartidor(Integer id, String nombre, String matricula){
+        this.id = id; this.nombre = nombre; this.matricula = matricula;
+    }
 
     public Integer getId() {
         return id;

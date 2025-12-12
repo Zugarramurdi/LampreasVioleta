@@ -1,0 +1,13 @@
+[ {
+  "id" : 1,
+  "nombre" : "comercial1",
+  "telefono" : null,
+  "email" : "comercial@lamprea.com",
+  "clientes" : [ ]
+}, {
+  "id" : 2,
+  "nombre" : "comercial2",
+  "telefono" : null,
+  "email" : "comercial2@lamprea.com",
+  "clientes" : [ ]
+} ]

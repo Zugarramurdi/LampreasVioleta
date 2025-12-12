@@ -1,0 +1,13 @@
+[ {
+  "id" : 1,
+  "nombre" : "Repartidor1",
+  "telefono" : null,
+  "matricula" : "9658AAA",
+  "pedidos" : [ ]
+}, {
+  "id" : 2,
+  "nombre" : "Repartidor2",
+  "telefono" : null,
+  "matricula" : "1234BBB",
+  "pedidos" : [ ]
+} ]

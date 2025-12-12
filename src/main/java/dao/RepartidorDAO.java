@@ -86,6 +86,7 @@ public class RepartidorDAO {
             ps.setString(1, patron);
             ps.setString(2, patron);
             ps.setString(3, patron);
+            ps.setString(4, patron);
 
             List<Repartidor> repartidores = new ArrayList<>();
             try(ResultSet rs = ps.executeQuery()){

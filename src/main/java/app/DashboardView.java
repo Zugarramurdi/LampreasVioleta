@@ -8,25 +8,75 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 
+
+/**
+ * Vista principal (dashboard) que actúa como contenedor y punto de navegación entre las distintas vistas
+ * de la aplicación (Clientes, Comerciales y Repartidores).
+ *
+ * <p>Esta clase existe para centralizar:
+ * <ul>
+ *   <li>El layout común (sidebar + zona de contenido).</li>
+ *   <li>La creación y reutilización de las vistas internas.</li>
+ *   <li>La navegación entre vistas mediante botones.</li>
+ * </ul>
+ * De este modo, cada vista mantiene su lógica/controles y el dashboard se encarga de integrarlas en una única pantalla.</p>
+ *
+ * @apiNote Uso típico:
+ * <ul>
+ *   <li>Crear una instancia de {@code DashboardView}.</li>
+ *   <li>Insertar {@link #getRoot()} en una {@code Scene}.</li>
+ * </ul>
+ *
+ * @implNote Las vistas internas se instancian una sola vez y se reutilizan para mantener estado (p. ej. selección,
+ * texto introducido, scroll, etc.). Si prefieres “refrescar” cada vez, deberías crear nuevas instancias al navegar
+ * o proporcionar métodos de reset/recarga en cada vista.
+ *
+ * @see ClientesView
+ * @see ComercialesView
+ * @see RepartidoresView
+ */
 public class DashboardView {
 
     private final BorderPane root = new BorderPane();
     private final BorderPane contentPane = new BorderPane();
 
-    // Vistas que ya tienes
+    // Vistas integradas en el dashboard (reutilizadas)
     private final ClientesView clientesView = new ClientesView();
     private final ComercialesView comercialesView = new ComercialesView();
     private final RepartidoresView repartidoresView = new RepartidoresView(); // nueva
 
+    /**
+     * Construye el dashboard, inicializa el layout y muestra la vista por defecto.
+     *
+     * <p>Durante la construcción se llama a {@link #initLayout()} y se establece como vista inicial
+     * {@link #showClientes()}.</p>
+     */
     public DashboardView() {
         initLayout();
         showClientes(); // vista por defecto
     }
 
+    /**
+     * Devuelve el nodo raíz del dashboard para integrarlo en una {@code Scene} u otro contenedor.
+     *
+     * @return nodo raíz ({@link BorderPane}) del dashboard.
+     */
     public Parent getRoot() {
         return root;
     }
 
+    /**
+     * Inicializa el layout principal del dashboard:
+     * <ul>
+     *   <li>Configura estilos y padding del contenedor raíz.</li>
+     *   <li>Construye la barra lateral con el título y los botones de navegación.</li>
+     *   <li>Prepara el contenedor central ({@link #contentPane}) donde se cargan las vistas.</li>
+     *   <li>Registra los eventos de los botones para cambiar de vista.</li>
+     * </ul>
+     *
+     * @implNote Este método define la estructura general de la pantalla:
+     * sidebar en {@code root.setLeft(...)} y contenido en {@code root.setCenter(...)}.
+     */
     private void initLayout() {
         root.setPadding(new Insets(15));
         root.getStyleClass().add("dashboard-root");
@@ -86,17 +136,48 @@ public class DashboardView {
         btnRepartidores.setOnAction(e -> showRepartidores());
     }
 
+    /**
+     * Cambia la vista activa del dashboard.
+     *
+     * <p>Inserta el nodo recibido en el centro de {@link #contentPane}.</p>
+     *
+     * @param viewRoot nodo raíz de la vista que se quiere mostrar.
+     *
+     * @implNote Este método no crea vistas nuevas; únicamente “monta” en pantalla el nodo recibido.
+     * Si necesitas un refresco forzado (p. ej. recargar datos al navegar), hazlo en el método showWhatever()
+     * antes de llamar a {@code show(...)} o añade un método {@code refresh()} en cada vista.
+     */
+    private void show(Parent viewRoot){
+        contentPane.setCenter(viewRoot);
+    }
+
+    /**
+     * Muestra la vista de clientes en la zona central del dashboard.
+     *
+     * @implNote Reutiliza la misma instancia de {@link ClientesView} (mantiene estado).
+     */
     private void showClientes() {
 
-        contentPane.setCenter(clientesView.getRoot());
+        show(clientesView.getRoot());
     }
 
+    /**
+     * Muestra la vista de comerciales en la zona central del dashboard.
+     *
+     * @implNote Reutiliza la misma instancia de {@link ComercialesView} (mantiene estado).
+     */
     private void showComerciales() {
 
-        contentPane.setCenter(comercialesView.getRoot());
+        show(comercialesView.getRoot());
     }
 
+    /**
+     * Muestra la vista de repartidores en la zona central del dashboard.
+     *
+     * @implNote Reutiliza la misma instancia de {@link RepartidoresView} (mantiene estado).
+     */
     private void showRepartidores() {
-        contentPane.setCenter(repartidoresView.getRoot());
+
+        show(repartidoresView.getRoot());
     }
 }

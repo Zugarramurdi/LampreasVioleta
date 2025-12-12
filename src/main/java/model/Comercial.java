@@ -32,12 +32,21 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Entidad principal "Comercial".
- * Relaciones:
- *  - 1:N con Cliente (un comercial tiene muchos clientes).
- */
 
+/**
+ * Entidad de dominio {@code Comercial}.
+ *
+ * <p>Representa un comercial que puede estar asociado a múltiples {@link Cliente} (relación 1:N).
+ * Se utiliza como modelo en capa de UI, servicios y persistencia (DAO).</p>
+ *
+ * <h2>Relaciones</h2>
+ * <ul>
+ *   <li><b>1:N</b> con {@link Cliente}: un comercial puede tener varios clientes.</li>
+ * </ul>
+ *
+ * @implNote La lista {@link #clientes} se inicializa por defecto para evitar {@code NullPointerException}.
+ * El método {@link #getClientes()} expone la lista mutable (lista “viva”).
+ */
 public class Comercial {
 
     private Integer id;
@@ -49,56 +58,97 @@ public class Comercial {
     // 1:N
     private List<Cliente> clientes = new ArrayList<>();
 
+    /**
+     * Constructor vacío requerido por ciertas librerías/frameworks (p. ej. serialización).
+     */
     public Comercial() {}
+
+    /**
+     * Crea un comercial con identificador y datos principales.
+     *
+     * @param id identificador del comercial.
+     * @param nombre nombre del comercial.
+     * @param email email del comercial.
+     * @param telefono teléfono del comercial.
+     */
     public Comercial(Integer id, String nombre, String email, String telefono) {
         this.id = id; this.nombre = nombre;  this.email = email; this.telefono = telefono;
     }
+
+    /**
+     * Crea un comercial con ID, nombre y email (sin teléfono).
+     *
+     * @param id identificador.
+     * @param nombre nombre.
+     * @param email email.
+     */
     public Comercial(int id,String nombre, String email){
         this.id = id; this.nombre = nombre; this.email = email;
     }
 
+    /** @return identificador del comercial. */
     public Integer getId() {
         return id;
     }
 
+    /** @param id identificador del comercial. */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /** @return nombre del comercial. */
     public String getNombre() {
         return nombre;
     }
 
+    /** @param nombre nombre del comercial. */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
+    /** @return teléfono del comercial. */
     public String getTelefono() {
         return telefono;
     }
 
+    /** @param telefono teléfono del comercial. */
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 
+    /** @return email del comercial. */
     public String getEmail() {return email;}
+
+    /** @param email email del comercial. */
     public void setEmail(String email) {this.email = email;}
 
+    /**
+     * Devuelve la lista de clientes asociados.
+     *
+     * @return lista mutable de clientes (puede modificarse desde fuera).
+     * @implNote Si quieres proteger el encapsulamiento, puedes devolver una copia o una lista no modificable.
+     */
     public List<Cliente> getClientes() {
         return clientes;
     }
 
+    /** @param clientes lista de clientes asociados. */
     public void setClientes(List<Cliente> clientes) {
         this.clientes = clientes;
     }
 
+    /**
+     * Representación en texto para depuración.
+     *
+     * @implNote Evita incluir {@link #clientes} si puede ser grande o si existe riesgo de recursión.
+     */
     @Override
     public String toString() {
         return "Comercial{" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", telefono='" + telefono + '\'' +
-                ", clientes=" + clientes +
+                ", email=" + email +
                 '}';
     }
 }

@@ -20,20 +20,35 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 /**
- * Vista JavaFX para gestionar comercials.
+ * Vista JavaFX para la gestión básica de {@link Comercial}.
  *
- * Versión preparada para trabajar más adelante con DetalleComercial,
- * pero de momento:
- *  - SOLO usa ComercialDAO (insert, findById, findAll).
- *  - La tabla muestra únicamente datos de Comercial (id, nombre, email).
- *  - Los campos de detalle (dirección, teléfono, notas) se muestran en el
- *    formulario, pero aún NO se guardan en BD.
+ * <p>Esta clase encapsula la construcción de la interfaz, el registro de eventos y la coordinación
+ * con la capa de acceso a datos/servicios para listar, crear y buscar comerciales.</p>
  *
- * Cuando exista DetalleComercialDAO, podrás:
- *  - Cargar el detalle al seleccionar un comercial.
- *  - Guardar/actualizar detalle junto con el comercial.
- *  - Borrar detalle cuando borres un comercial.
+ * <h2>Responsabilidades</h2>
+ * <ul>
+ *   <li>Construir la UI: tabla, formulario, zona de búsqueda y botones.</li>
+ *   <li>Sincronizar selección de la tabla → campos del formulario.</li>
+ *   <li>Delegar lectura/escritura en {@link dao.ComercialDAO}.</li>
+ *   <li>Delegar exportación a JSON en {@link services.ComercialService}.</li>
+ *   <li>Mostrar feedback al usuario mediante {@link javafx.scene.control.Alert}.</li>
+ * </ul>
+ *
+ * <h2>Limitaciones actuales / evolución</h2>
+ * <ul>
+ *   <li>Los campos de detalle (dirección, teléfono, notas) son solo UI: no se guardan en BD.</li>
+ *   <li>La eliminación real está pendiente ({@code deleteById}).</li>
+ *   <li>La actualización (UPDATE) está pendiente: actualmente solo inserta si no existe.</li>
+ * </ul>
+ *
+ * <p><b>Nota de JavaFX:</b> esta vista debe usarse desde el JavaFX Application Thread, ya que
+ * modifica controles y estado de la escena.</p>
+ *
+ * @see Comercial
+ * @see dao.ComercialDAO
+ * @see services.ComercialService
  */
 public class ComercialesView {
 
@@ -71,13 +86,25 @@ public class ComercialesView {
     // Service (exportacion a JSON)
     private final ComercialService comercialService = new ComercialService();
 
+    /**
+     * Crea la vista, construye la interfaz, registra eventos y carga el listado inicial.
+     *
+     * <p>Durante la construcción se llama a:
+     * {@link #configurarTabla()}, {@link #configurarFormulario()},
+     * {@link #configurarEventos()} y {@link #recargarDatos()}.</p>
+     */
     public ComercialesView() {
         configurarTabla();
         configurarFormulario();
         configurarEventos();
-        recargarDatos(); // al iniciar la vista cargamos los comercials
+        recargarDatos(); // al iniciar la vista cargamos los comerciales
     }
 
+    /**
+     * Devuelve el nodo raíz de la vista para integrarlo en una escena o layout externo.
+     *
+     * @return nodo raíz ({@link BorderPane}) que contiene tabla y formulario.
+     */
     public Parent getRoot() {
         return root;
     }
@@ -86,6 +113,14 @@ public class ComercialesView {
        CONFIGURACIÓN INTERFAZ
        ========================================================= */
 
+    /**
+     * Configura la tabla principal: define columnas, enlaza propiedades y asigna la lista observable.
+     *
+     * <p>Incluye columnas "placeholder" para datos de detalle (dirección/teléfono/notas) que por ahora
+     * no están conectadas a BD.</p>
+     *
+     * @implNote Este método modifica el layout principal llamando a {@code root.setCenter(tabla)}.
+     */
     private void configurarTabla() {
         TableColumn<Comercial, Number> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(c ->
@@ -119,6 +154,13 @@ public class ComercialesView {
         root.setCenter(tabla);
     }
 
+    /**
+     * Construye el formulario inferior con campos de {@link Comercial}, campos de detalle (solo UI),
+     * la zona de búsqueda y los botones de acción.
+     *
+     * @implNote Este método configura hints visuales usando {@code setPromptText(...)}
+     * y coloca el bloque inferior en {@code root.setBottom(...)}.
+     */
     private void configurarFormulario() {
         GridPane form = new GridPane();
         form.setPadding(new Insets(10));
@@ -166,6 +208,16 @@ public class ComercialesView {
         root.setBottom(bottom);
     }
 
+    /**
+     * Registra los manejadores de eventos:
+     * <ul>
+     *   <li>Selección en tabla → rellena formulario y desactiva el campo ID.</li>
+     *   <li>Acciones de botones (nuevo/guardar/borrar/recargar/buscar/limpiar/exportar).</li>
+     * </ul>
+     *
+     * <p>También limpia los campos de detalle al seleccionar un comercial, a la espera de integrar
+     * la carga real de detalle desde BD.</p>
+     */
     private void configurarEventos() {
         // Cuando seleccionamos una fila en la tabla, pasamos los datos al formulario
         tabla.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
@@ -212,23 +264,33 @@ public class ComercialesView {
        ========================================================= */
 
     /**
-     * Carga todos los comercials desde la BD usando ComercialDAO.findAll()
+     * Recarga el listado completo de comerciales desde la base de datos.
+     *
+     * <p>Obtiene los registros mediante {@link ComercialDAO#findAll()} y actualiza la lista observable
+     * usada por la tabla.</p>
+     *
+     * <p>Si ocurre un error SQL, se muestra un diálogo mediante {@link #mostrarError(String, Exception)}.</p>
      */
     private void recargarDatos() {
         try {
             List<Comercial> lista = comercialDAO.findAll();
             datos.setAll(lista);
         } catch (SQLException e) {
-            mostrarError("Error al cargar comercials", e);
+            mostrarError("Error al cargar comerciales", e);
         }
     }
 
     /**
-     * Búsqueda de momento hecha EN MEMORIA.
+     * Filtra comerciales en memoria a partir del texto de {@link #txtBuscar}.
      *
-     * Se carga toda la lista (findAll) y se filtra con streams.
-     * Más adelante se puede cambiar para que use ComercialDAO.search()
-     * cuando lo implementéis.
+     * <p>Este enfoque:
+     * <ul>
+     *   <li>Carga todos los comerciales ({@link ComercialDAO#findAll()}).</li>
+     *   <li>Aplica un filtrado por ID/nombre/email.</li>
+     * </ul>
+     * Es útil como solución rápida, pero para grandes volúmenes conviene delegar la búsqueda a BD.</p>
+     *
+     * @implNote La comparación no distingue mayúsculas/minúsculas para nombre y email.
      */
     private void buscarComercialsEnMemoria() {
         String filtro = txtBuscar.getText().trim();
@@ -251,11 +313,16 @@ public class ComercialesView {
 
             datos.setAll(filtrados);
         } catch (SQLException e) {
-            mostrarError("Error al buscar comercials", e);
+            mostrarError("Error al buscar comerciales", e);
         }
     }
 
-
+    /**
+     * Busca comerciales delegando la consulta a la base de datos.
+     *
+     * <p>Si el filtro está vacío, recarga todos los datos. Si no, llama a
+     * {@link ComercialDAO#search(String)} y actualiza la tabla con el resultado.</p>
+     */
     private void buscarComercialsEnBBDD(){
         String filtro = txtBuscar.getText().trim();
 
@@ -274,6 +341,15 @@ public class ComercialesView {
 
     }
 
+    /**
+     * Limpia todos los campos del formulario y restablece el estado inicial de edición.
+     *
+     * <ul>
+     *   <li>Vacía campos de comercial y de detalle.</li>
+     *   <li>Vuelve a habilitar el campo ID.</li>
+     *   <li>Elimina la selección actual de la tabla.</li>
+     * </ul>
+     */
     private void limpiarFormulario() {
         txtId.clear();
         txtNombre.clear();
@@ -286,14 +362,20 @@ public class ComercialesView {
     }
 
     /**
-     * Guardar comercial:
-     *  - Si no existe en la BD → INSERT usando ComercialDAO.insert()
-     *  - Si existe → por ahora solo muestra un aviso.
+     * Guarda el comercial del formulario.
      *
-     * NOTA:
-     *  - Los datos de detalle (dirección, teléfono, notas) todavía NO se guardan.
-     *  - Cuando tengáis DetalleComercialDAO y/o ComercialService, aquí se podrá:
-     *      * insertar/actualizar también el detalle en una transacción.
+     * <h2>Reglas actuales</h2>
+     * <ul>
+     *   <li>Valida que ID, nombre y email no estén vacíos.</li>
+     *   <li>Convierte el ID a entero (si falla, muestra aviso).</li>
+     *   <li>Si el comercial no existe ({@link ComercialDAO#findById(int)} devuelve {@code null}),
+     *       inserta con {@link ComercialDAO#insert(Comercial)}.</li>
+     *   <li>Si ya existe, muestra un aviso (UPDATE pendiente).</li>
+     * </ul>
+     *
+     * <p>Los campos de detalle (dirección/teléfono/notas) aún no se persisten.</p>
+     *
+     * @implNote Este método muestra diálogos al usuario y, al finalizar, recarga datos y limpia el formulario.
      */
     private void guardarComercial() {
         // Validación rápida
@@ -353,15 +435,12 @@ public class ComercialesView {
     }
 
     /**
-     * Borrar comercial seleccionado.
-     * De momento solo muestra un aviso con un TODO.
+     * Solicita confirmación y gestiona el borrado del comercial seleccionado en la tabla.
      *
-     * Cuando implementéis ComercialDAO.deleteById(int id),
-     * se puede llamar aquí a ese método.
+     * <p>Actualmente el borrado real está pendiente de implementar. En el futuro debería llamar a
+     * {@code ComercialDAO.deleteById(int)} o delegar en un service (idealmente con transacción si hay detalle asociado).</p>
      *
-     * Y cuando exista DetalleComercialDAO, sería buena idea borrar primero
-     * el detalle del comercial y luego el comercial (o usar ON DELETE CASCADE
-     * + transacción en un Service).
+     * <p>Si no hay selección, se muestra un aviso.</p>
      */
     private void borrarComercialSeleccionado() {
         Comercial sel = tabla.getSelectionModel().getSelectedItem();
@@ -403,6 +482,15 @@ public class ComercialesView {
         */
     }
 
+    /**
+     * Exporta el listado de comerciales a un fichero JSON.
+     *
+     * <p>Delega la generación en {@link ComercialService#exportarComercialesAJson(String)}.
+     * Si la operación finaliza correctamente, informa de la ruta absoluta del fichero.</p>
+     *
+     * <p>Las excepciones {@link SQLException} y {@link IOException} se capturan y se muestran
+     * mediante {@link #mostrarError(String, Exception)}.</p>
+     */
     private void exportarComercialesJson(){
         String nombreFichero = "comerciales.json";
         try{
@@ -413,7 +501,7 @@ public class ComercialesView {
             mostrarInfo("Exportacion correcta", "Se ha generado el fichero "+nombreFichero+ " en "+ruta);
 
         }catch(SQLException | IOException e){
-            mostrarError("Error al exportar clientes",e);
+            mostrarError("Error al exportar los datos",e);
         }
     }
 
@@ -421,6 +509,12 @@ public class ComercialesView {
        DIÁLOGOS AUXILIARES
        ========================================================= */
 
+    /**
+     * Muestra un diálogo de error y registra el stacktrace en consola.
+     *
+     * @param titulo título/cabecera del diálogo para contextualizar el fallo.
+     * @param e      excepción capturada.
+     */
     private void mostrarError(String titulo, Exception e) {
         e.printStackTrace();
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -430,6 +524,12 @@ public class ComercialesView {
         alert.showAndWait();
     }
 
+    /**
+     * Muestra un diálogo de advertencia al usuario.
+     *
+     * @param titulo  título/cabecera del aviso.
+     * @param mensaje detalle del aviso.
+     */
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Aviso");
@@ -438,6 +538,12 @@ public class ComercialesView {
         alert.showAndWait();
     }
 
+    /**
+     * Muestra un diálogo informativo al usuario.
+     *
+     * @param titulo  título/cabecera del mensaje.
+     * @param mensaje detalle informativo.
+     */
     private void mostrarInfo(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Información");

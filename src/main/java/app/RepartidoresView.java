@@ -432,12 +432,19 @@ public class RepartidoresView {
     }
 
     /**
-     * Solicita confirmación y gestiona el borrado del repartidor seleccionado en la tabla.
+     * Borra el repartidor actualmente seleccionado en la tabla, solicitando confirmación previa.
      *
-     * <p>Actualmente el borrado real está pendiente de implementar. En el futuro debería llamar a
-     * {@code RepartidorDAO.deleteById(int)} o delegar en un service (idealmente con transacción si hay detalle asociado).</p>
+     * <p>Si no hay selección, se muestra un aviso y no se realiza ninguna acción.</p>
      *
-     * <p>Si no hay selección, se muestra un aviso.</p>
+     * <p>Si el usuario confirma el borrado y la operación se completa correctamente, la vista se
+     * actualiza llamando a {@link #recargarDatos()} y se reinicia el formulario con
+     * {@link #limpiarFormulario()}.</p>
+     *
+     * <p>Si no se borra ninguna fila (por ejemplo, porque el registro ya no existe), se informa al usuario.
+     * Si se produce un error de base de datos, se muestra un diálogo de error.</p>
+     *
+     * <p>Nota: cuando exista persistencia del detalle (p. ej. DetalleRepartidorDAO), convendrá asegurar la
+     * consistencia del borrado (transacción o {@code ON DELETE CASCADE}).</p>
      */
     private void borrarRepartidorSeleccionado() {
         Repartidor sel = tabla.getSelectionModel().getSelectedItem();

@@ -352,15 +352,22 @@ public class ClientesView {
     }
 
     /**
-     * Borrar cliente seleccionado.
-     * De momento solo muestra un aviso con un TODO.
+     * Borra el cliente actualmente seleccionado en la tabla.
      *
-     * Cuando implementéis ClienteDAO.deleteById(int id),
-     * se puede llamar aquí a ese método.
+     * <p>Flujo:</p>
+     * <ul>
+     *   <li>Si no hay selección, muestra un aviso y no realiza ninguna acción.</li>
+     *   <li>Si hay selección, solicita confirmación al usuario.</li>
+     *   <li>Si se confirma, ejecuta {@link dao.ClienteDAO#deleteById(int)}.</li>
+     *   <li>Si se borra al menos una fila, muestra un mensaje de éxito, recarga la tabla y limpia el formulario.</li>
+     *   <li>Si no se borra ninguna fila, muestra un aviso indicando que no se encontró el registro.</li>
+     * </ul>
      *
-     * Y cuando exista DetalleClienteDAO, sería buena idea borrar primero
-     * el detalle del cliente y luego el cliente (o usar ON DELETE CASCADE
-     * + transacción en un Service).
+     * <p>En caso de error de base de datos, se muestra un diálogo con el detalle de la excepción.</p>
+     *
+     * <p>Nota: cuando exista persistencia del detalle (p. ej. {@code DetalleClienteDAO}), convendrá
+     * asegurar el borrado consistente (borrar detalle + cliente en una transacción, o usar
+     * claves foráneas con {@code ON DELETE CASCADE}).</p>
      */
     private void borrarClienteSeleccionado() {
         Cliente sel = tabla.getSelectionModel().getSelectedItem();

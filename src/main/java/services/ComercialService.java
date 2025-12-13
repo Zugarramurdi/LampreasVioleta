@@ -39,7 +39,7 @@ public class ComercialService {
     public File exportarComercialesAJson(String nombreFichero) throws SQLException, IOException {
         List<Comercial> comerciales = obtenerTodos();
 
-        //Creamos carpeta donde guardar los exports
+        //Instanciamos carpeta donde guardar los exports
         File carpeta = new File("exports");
 
         //creamos la carpeta si no existe

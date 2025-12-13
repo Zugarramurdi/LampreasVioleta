@@ -461,12 +461,12 @@ public class ComercialesView {
         // TODO futuro: cuando haya DetalleComercialDAO, borrar primero detalle,
         //  después comercial, o delegarlo todo a ComercialService.deleteComercialCompleto(id).
 
-        mostrarAlerta("Borrado pendiente",
-                "Aún no existe deleteById en ComercialDAO.\n" +
-                        "Cuando lo implementemos, aquí se llamará al método.");
+//        mostrarAlerta("Borrado pendiente",
+//                "Aún no existe deleteById en ComercialDAO.\n" +
+//                        "Cuando lo implementemos, aquí se llamará al método.");
 
         // Ejemplo futuro:
-        /*
+
         try {
             int borradas = comercialDAO.deleteById(sel.getId());
             if (borradas > 0) {
@@ -479,7 +479,7 @@ public class ComercialesView {
         } catch (SQLException e) {
             mostrarError("Error al borrar comercial", e);
         }
-        */
+
     }
 
     /**

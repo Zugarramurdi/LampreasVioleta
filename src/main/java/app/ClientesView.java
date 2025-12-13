@@ -381,12 +381,12 @@ public class ClientesView {
         // TODO futuro: cuando haya DetalleClienteDAO, borrar primero detalle,
         //  después cliente, o delegarlo todo a ClienteService.deleteClienteCompleto(id).
 
-        mostrarAlerta("Borrado pendiente",
-                "Aún no existe deleteById en ClienteDAO.\n" +
-                        "Cuando lo implementemos, aquí se llamará al método.");
+//        mostrarAlerta("Borrado pendiente",
+//                "Aún no existe deleteById en ClienteDAO.\n" +
+//                        "Cuando lo implementemos, aquí se llamará al método.");
 
         // Ejemplo futuro:
-        /*
+
         try {
             int borradas = clienteDAO.deleteById(sel.getId());
             if (borradas > 0) {
@@ -399,7 +399,7 @@ public class ClientesView {
         } catch (SQLException e) {
             mostrarError("Error al borrar cliente", e);
         }
-        */
+
     }
 
     private void exportarClientesJson(){

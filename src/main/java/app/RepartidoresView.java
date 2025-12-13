@@ -458,12 +458,12 @@ public class RepartidoresView {
         // TODO futuro: cuando haya DetalleRepartidorDAO, borrar primero detalle,
         //  después repartidor, o delegarlo todo a RepartidorService.deleteRepartidorCompleto(id).
 
-        mostrarAlerta("Borrado pendiente",
-                "Aún no existe deleteById en RepartidorDAO.\n" +
-                        "Cuando lo implementemos, aquí se llamará al método.");
+//        mostrarAlerta("Borrado pendiente",
+//                "Aún no existe deleteById en RepartidorDAO.\n" +
+//                        "Cuando lo implementemos, aquí se llamará al método.");
 
         // Ejemplo futuro:
-        /*
+
         try {
             int borradas = repartidorDAO.deleteById(sel.getId());
             if (borradas > 0) {
@@ -476,7 +476,7 @@ public class RepartidoresView {
         } catch (SQLException e) {
             mostrarError("Error al borrar repartidor", e);
         }
-        */
+
     }
 
     /**

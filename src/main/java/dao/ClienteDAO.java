@@ -1,9 +1,9 @@
 package dao;
 
-import DB.DBConnection;
+import db.Db;
 import model.Cliente;
+import model.DetalleCliente;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +29,19 @@ public class ClienteDAO {
 
 
     public void insert(Cliente cliente) throws SQLException {
-        try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(INSERT_SQL)) {
+        try(Connection con = Db.getConnection(); PreparedStatement ps = con.prepareStatement(INSERT_SQL)) {
+            ps.setInt(1,cliente.getId());
+            ps.setString(2,cliente.getNombre());
+            ps.setString(3,cliente.getEmail());
+
+            ps.executeUpdate();
+
+        }
+
+    }
+
+    public void insert(Cliente cliente, Connection con) throws SQLException {
+        try(PreparedStatement ps = con.prepareStatement(INSERT_SQL)) {
             ps.setInt(1,cliente.getId());
             ps.setString(2,cliente.getNombre());
             ps.setString(3,cliente.getEmail());
@@ -41,7 +53,7 @@ public class ClienteDAO {
     }
 
     public Cliente findById(int id) throws SQLException {
-        try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(SELECT_BY_ID_SQL)) {
+        try(Connection con = Db.getConnection(); PreparedStatement ps = con.prepareStatement(SELECT_BY_ID_SQL)) {
             ps.setInt(1,id);
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -58,7 +70,7 @@ public class ClienteDAO {
 
     public List<Cliente> findAll() throws SQLException {
         List<Cliente> out = new ArrayList<>();
-        try (Connection con = DBConnection.getConnection();PreparedStatement ps = con.prepareStatement(SELECT_ALL_SQL); ResultSet rs = ps.executeQuery()) {
+        try (Connection con = Db.getConnection(); PreparedStatement ps = con.prepareStatement(SELECT_ALL_SQL); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
 //                Cliente c = new Cliente(rs.getInt("id"), rs.getString("nombre"), rs.getString("email"));
                 out.add(mapRow(rs));
@@ -68,7 +80,7 @@ public class ClienteDAO {
     }
 
     public int Update(Cliente c) throws SQLException {
-        try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(UPDATE_SQL)) {
+        try(Connection con = Db.getConnection(); PreparedStatement ps = con.prepareStatement(UPDATE_SQL)) {
             ps.setString(1, c.getNombre());
             ps.setString(2, c.getEmail());
             ps.setInt(3, c.getId());
@@ -79,7 +91,7 @@ public class ClienteDAO {
     }
 
     public int deleteById(int id) throws SQLException {
-        try(Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(DELETE_SQL)) {
+        try(Connection con = Db.getConnection(); PreparedStatement ps = con.prepareStatement(DELETE_SQL)) {
             ps.setInt(1,id);
 
             return ps.executeUpdate();
@@ -90,7 +102,7 @@ public class ClienteDAO {
 
         String patron = "%" + filtro + "%";
 
-        try (Connection con = DBConnection.getConnection();
+        try (Connection con = Db.getConnection();
              PreparedStatement pst = con.prepareStatement(SEARCH_SQL)) {
             pst.setString(1, patron);
             pst.setString(2, patron);

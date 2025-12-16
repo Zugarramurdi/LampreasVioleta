@@ -1,6 +1,6 @@
 package dao;
 
-import DB.DBConnection;
+import db.Db;
 import model.DetalleCliente;
 
 import java.sql.*;
@@ -61,12 +61,37 @@ public class DetalleClienteDAO {
      * IMPORTANTE: el id debe coincidir con un cliente existente (relación 1:1).
      */
     public void insert(DetalleCliente d) throws SQLException {
-        try (Connection con = DBConnection.getConnection();
+        try (Connection con = Db.getConnection();
              PreparedStatement pst = con.prepareStatement(INSERT_SQL)) {
 
             pst.setInt(1, d.getId());
             pst.setString(2, d.getDireccion());
-            pst.setString(3, d.getTelefono());
+            String tel = d.getTelefono();
+            if (tel == null || tel.isBlank()) {
+                pst.setNull(3, Types.VARCHAR);   // ← fuerza NULL → rompe NOT NULL
+            } else {
+                pst.setString(3, tel.trim());
+            }
+            pst.setString(4, d.getNotas());
+
+            pst.executeUpdate();
+        }
+    }
+    /**
+     * Inserta un detalle nuevo.
+     * IMPORTANTE: el id debe coincidir con un cliente existente (relación 1:1).
+     */
+    public void insert(DetalleCliente d, Connection con) throws SQLException {
+        try (PreparedStatement pst = con.prepareStatement(INSERT_SQL)) {
+
+            pst.setInt(1, d.getId());
+            pst.setString(2, d.getDireccion());
+            String tel = d.getTelefono();
+            if (tel == null || tel.isBlank()) {
+                pst.setNull(3, Types.VARCHAR);   // ← fuerza NULL → rompe NOT NULL
+            } else {
+                pst.setString(3, tel.trim());
+            }
             pst.setString(4, d.getNotas());
 
             pst.executeUpdate();
@@ -78,7 +103,7 @@ public class DetalleClienteDAO {
      * Devuelve null si no existe.
      */
     public DetalleCliente findById(int id) throws SQLException {
-        try (Connection con = DBConnection.getConnection();
+        try (Connection con = Db.getConnection();
              PreparedStatement pst = con.prepareStatement(SELECT_BY_ID_SQL)) {
 
             pst.setInt(1, id);
@@ -98,7 +123,7 @@ public class DetalleClienteDAO {
     public List<DetalleCliente> findAll() throws SQLException {
         List<DetalleCliente> out = new ArrayList<>();
 
-        try (Connection con = DBConnection.getConnection();
+        try (Connection con = Db.getConnection();
              PreparedStatement pst = con.prepareStatement(SELECT_ALL_SQL);
              ResultSet rs = pst.executeQuery()) {
 
@@ -115,7 +140,7 @@ public class DetalleClienteDAO {
      * Si id no existe, devuelve 0.
      */
     public int update(DetalleCliente d) throws SQLException {
-        try (Connection con = DBConnection.getConnection();
+        try (Connection con = Db.getConnection();
              PreparedStatement pst = con.prepareStatement(UPDATE_SQL)) {
 
             pst.setString(1, d.getDireccion());
@@ -131,7 +156,7 @@ public class DetalleClienteDAO {
      * Borra un detalle concreto.
      */
     public int deleteById(int id) throws SQLException {
-        try (Connection con = DBConnection.getConnection();
+        try (Connection con = Db.getConnection();
              PreparedStatement pst = con.prepareStatement(DELETE_SQL)) {
 
             pst.setInt(1, id);

@@ -73,6 +73,18 @@ public class DetalleClienteDAO {
         }
     }
 
+    public void insert(DetalleCliente d, Connection con) throws SQLException {
+        try (PreparedStatement pst = con.prepareStatement(INSERT_SQL)) {
+
+            pst.setInt(1, d.getId());
+            pst.setString(2, d.getDireccion());
+            pst.setString(3, d.getTelefono());
+            pst.setString(4, d.getNotas());
+
+            pst.executeUpdate();
+        }
+    }
+
     /**
      * Obtiene un detalle según el ID (clave primaria).
      * Devuelve null si no existe.

@@ -62,6 +62,18 @@ public class ClienteDAO {
 
     }
 
+    public void insert(Cliente cliente, Connection con) throws SQLException {
+        try(PreparedStatement ps = con.prepareStatement(INSERT_SQL)) {
+            ps.setInt(1,cliente.getId());
+            ps.setString(2,cliente.getNombre());
+            ps.setString(3,cliente.getEmail());
+
+            ps.executeUpdate();
+
+        }
+
+    }
+
     /**
      * Busca un {@link Cliente} por su identificador.
      *

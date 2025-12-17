@@ -373,12 +373,10 @@ public class ClientesView {
                 clienteDetalle.guardarClienteCompleto(c, d);
 
                 mostrarInfo("Insertado",
-                        "Cliente y detalle creados (sin transacción).");
+                        "Cliente y detalle creados (con transacción).");
             } else {
-
-                mostrarAlerta("Actualizar pendiente",
-                        "El cliente ya existe.\n" +
-                                "Más adelante aquí haremos UPDATE desde el Service.");
+                clienteDetalle.updateClienteCompleto(c, d);
+                mostrarInfo("Actualizado", "Cliente y detalle actualizados (con transacción)");
             }
 
             recargarDatos();

@@ -40,4 +40,21 @@ public class ClienteDetalle {
 
     }
 
+    public void updateClienteCompleto(Cliente c, DetalleCliente d) throws SQLException {
+        try(Connection con = DBConnection.getConnection()) {
+            con.setAutoCommit(false);
+
+            try{
+                clienteDAO.update(c, con);
+                detalleClienteDAO.update(d, con);
+                con.commit();
+            } catch (SQLException e) {
+                con.rollback();
+                throw e;
+            }finally{
+                con.setAutoCommit(true);
+            }
+        }
+    }
+
 }

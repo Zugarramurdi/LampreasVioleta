@@ -144,6 +144,23 @@ public class DetalleClienteDAO {
         }
     }
 
+    public int update(DetalleCliente d, Connection con) throws SQLException {
+        try (PreparedStatement pst = con.prepareStatement(UPDATE_SQL)) {
+
+            pst.setString(1, d.getDireccion());
+            String tel = d.getTelefono();
+            if (tel == null || tel.isBlank()) {
+                pst.setNull(2, Types.VARCHAR);   // ← fuerza NULL → rompe NOT NULL
+            } else {
+                pst.setString(2, tel.trim());
+            }
+            pst.setString(3, d.getNotas());
+            pst.setInt(4, d.getId());
+
+            return pst.executeUpdate(); // número de filas afectadas
+        }
+    }
+
     /**
      * Borra un detalle concreto.
      */

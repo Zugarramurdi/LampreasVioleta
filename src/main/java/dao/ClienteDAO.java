@@ -132,6 +132,17 @@ public class ClienteDAO {
 
     }
 
+    public int update(Cliente c, Connection con) throws SQLException {
+        try(PreparedStatement ps = con.prepareStatement(UPDATE_SQL)) {
+            ps.setString(1, c.getNombre());
+            ps.setString(2, c.getEmail());
+            ps.setInt(3, c.getId());
+
+            return ps.executeUpdate();
+        }
+
+    }
+
     /**
      * Elimina un cliente por ID.
      *

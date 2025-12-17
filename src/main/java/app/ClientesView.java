@@ -51,7 +51,6 @@ public class ClientesView {
 
     // Caché en memoria: idCliente -> detalle
     private final Map<Integer, DetalleCliente> cacheDetalles = new HashMap<>();
-
     // Campos de formulario (Cliente)
     private final TextField txtId = new TextField();
     private final TextField txtNombre = new TextField();
@@ -199,15 +198,15 @@ public class ClientesView {
                 // TODO: cuando implementéis DetalleClienteDAO, aquí:
                 //   - detalleDAO.findById(newSel.getId())
                 //   - rellenar txtDireccion, txtTelefono, txtNotas con sus valores
-//                try {
-//                    detalleClienteDAO.findById(newSel.getId());
-//
-//                }catch(SQLException e){
-//                    mostrarError("Error al encontrar detalles", e);
-//                }
-                txtDireccion.clear();
-                txtTelefono.clear();
-                txtNotas.clear();
+                try {
+                    DetalleCliente d = detalleClienteDAO.findById(newSel.getId());
+                    txtDireccion.setText(d.getDireccion());
+                    txtTelefono.setText(d.getTelefono());
+                    txtNotas.setText(d.getNotas());
+                }catch(SQLException e){
+                    mostrarError("Error al recuperar detalles de BD",e);
+                }
+
             }
         });
 
@@ -243,6 +242,17 @@ public class ClientesView {
         try {
             List<Cliente> lista = clienteDAO.findAll();
             datos.setAll(lista);
+            cacheDetalles.clear();
+            for(Cliente c : lista){
+                Integer id = c.getId();
+                if(id == null) continue;
+
+                DetalleCliente d = detalleClienteDAO.findById(id);
+                if(d != null){
+                    cacheDetalles.put(id, d);
+                }
+            }
+            tabla.refresh();
         } catch (SQLException e) {
             mostrarError("Error al cargar clientes", e);
         }

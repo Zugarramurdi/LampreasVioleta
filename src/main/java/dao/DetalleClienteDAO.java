@@ -78,7 +78,12 @@ public class DetalleClienteDAO {
 
             pst.setInt(1, d.getId());
             pst.setString(2, d.getDireccion());
-            pst.setString(3, d.getTelefono());
+            String tel = d.getTelefono();
+            if (tel == null || tel.isBlank()) {
+                pst.setNull(3, Types.VARCHAR);   // ← fuerza NULL → rompe NOT NULL
+            } else {
+                pst.setString(3, tel.trim());
+            }
             pst.setString(4, d.getNotas());
 
             pst.executeUpdate();

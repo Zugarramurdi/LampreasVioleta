@@ -2,21 +2,35 @@
   "id" : 1,
   "nombre" : "Roberto Rodriguez",
   "email" : "robert@rodri.com",
-  "idComercial" : null,
-  "detalle" : null,
-  "pedidos" : [ ]
+  "direccion" : null,
+  "telefono" : null,
+  "notas" : null
 }, {
   "id" : 2,
   "nombre" : "Andrea Valenti",
   "email" : "andrea@valenti.com",
-  "idComercial" : null,
-  "detalle" : null,
-  "pedidos" : [ ]
+  "direccion" : null,
+  "telefono" : null,
+  "notas" : null
 }, {
   "id" : 3,
   "nombre" : "Pepito",
   "email" : "pepito@grillo.com",
-  "idComercial" : null,
-  "detalle" : null,
-  "pedidos" : [ ]
+  "direccion" : null,
+  "telefono" : null,
+  "notas" : null
+}, {
+  "id" : 4,
+  "nombre" : "Jose",
+  "email" : "jose@jose",
+  "direccion" : "Calle Jose",
+  "telefono" : "666123456",
+  "notas" : "Es un Jose"
+}, {
+  "id" : 5,
+  "nombre" : "Pedro",
+  "email" : "pedro@picapiedra.com",
+  "direccion" : "Alguna cueva",
+  "telefono" : "666123212",
+  "notas" : "Trabaja con piedras"
 } ]

@@ -60,9 +60,9 @@ public class RepartidoresView {
     private final TextField txtMatricula = new TextField();
 
     // Campos de formulario (DetalleRepartidor) – por ahora solo visuales
-    private final TextField txtDireccion = new TextField();
+
     private final TextField txtTelefono  = new TextField();
-    private final TextField txtNotas     = new TextField();
+
 
     // Botones CRUD
     private final Button btnNuevo    = new Button("Nuevo");
@@ -119,32 +119,28 @@ public class RepartidoresView {
      */
     private void configurarTabla() {
         TableColumn<Repartidor, Number> colId = new TableColumn<>("ID");
-        colId.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleIntegerProperty(c.getValue().getId()));
+        colId.setCellValueFactory(r ->
+                new javafx.beans.property.SimpleIntegerProperty(r.getValue().getId()));
 
         TableColumn<Repartidor, String> colNombre = new TableColumn<>("Nombre");
-        colNombre.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(c.getValue().getNombre()));
+        colNombre.setCellValueFactory(r ->
+                new javafx.beans.property.SimpleStringProperty(r.getValue().getNombre()));
 
         TableColumn<Repartidor, String> colMatricula = new TableColumn<>("Matrícula");
-        colMatricula.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(c.getValue().getMatricula()));
+        colMatricula.setCellValueFactory(r ->
+                new javafx.beans.property.SimpleStringProperty(r.getValue().getMatricula()));
 
         // ===== Columnas “placeholder” para DetalleRepartidor =====
-        TableColumn<Repartidor, String> colDireccion = new TableColumn<>("Dirección");
-        colDireccion.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(""));
+
 
         TableColumn<Repartidor, String> colTelefono = new TableColumn<>("Teléfono");
-        colTelefono.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(""));
+        colTelefono.setCellValueFactory(r ->
+                new javafx.beans.property.SimpleStringProperty(r.getValue().getTelefono()));
 
-        TableColumn<Repartidor, String> colNotas = new TableColumn<>("Notas");
-        colNotas.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(""));
+
 
         tabla.getColumns().addAll(colId, colNombre, colMatricula,
-                colDireccion, colTelefono, colNotas);
+                colTelefono);
         tabla.setItems(datos);
 
         root.setCenter(tabla);
@@ -167,6 +163,7 @@ public class RepartidoresView {
         txtId.setPromptText("ID (entero)");
         txtNombre.setPromptText("Nombre");
         txtMatricula.setPromptText("Matrícula");
+        txtTelefono.setPromptText("Teléfono");
 
         form.add(new Label("ID:"), 0, 0);
         form.add(txtId, 1, 0);
@@ -176,16 +173,14 @@ public class RepartidoresView {
         form.add(txtMatricula, 1, 2);
 
         // ----- DetalleRepartidor (solo UI, sin BD de momento) -----
-        txtDireccion.setPromptText("Dirección");
-        txtTelefono.setPromptText("Teléfono");
-        txtNotas.setPromptText("Notas");
 
-        form.add(new Label("Dirección:"), 0, 3);
-        form.add(txtDireccion, 1, 3);
-        form.add(new Label("Teléfono:"), 0, 4);
-        form.add(txtTelefono, 1, 4);
-        form.add(new Label("Notas:"), 0, 5);
-        form.add(txtNotas, 1, 5);
+
+
+
+
+        form.add(new Label("Teléfono:"), 0, 3);
+        form.add(txtTelefono, 1, 3);
+
 
         // Zona botones CRUD
         HBox botonesCrud = new HBox(10, btnNuevo, btnGuardar, btnBorrar, btnRecargar, btnExportarJson);
@@ -222,15 +217,14 @@ public class RepartidoresView {
                 txtId.setText(String.valueOf(newSel.getId()));
                 txtNombre.setText(newSel.getNombre());
                 txtMatricula.setText(newSel.getMatricula());
+                txtTelefono.setText(newSel.getTelefono());
                 txtId.setDisable(true); // al editar, de momento, no dejamos cambiar el ID
 
                 // DetalleRepartidor (cuando exista DetalleRepartidorDAO se cargará desde BD)
                 // TODO: cuando implementéis DetalleRepartidorDAO, aquí:
                 //   - detalleDAO.findById(newSel.getId())
                 //   - rellenar txtDireccion, txtTelefono, txtNotas con sus valores
-                txtDireccion.clear();
-                txtTelefono.clear();
-                txtNotas.clear();
+
             }
         });
 
@@ -300,10 +294,10 @@ public class RepartidoresView {
             String f = filtro.toLowerCase();
 
             List<Repartidor> filtrados = lista.stream()
-                    .filter(c ->
-                            String.valueOf(c.getId()).contains(f) ||
-                                    c.getNombre().toLowerCase().contains(f) ||
-                                    c.getMatricula().toLowerCase().contains(f)
+                    .filter(r ->
+                            String.valueOf(r.getId()).contains(f) ||
+                                    r.getNombre().toLowerCase().contains(f) ||
+                                    r.getMatricula().toLowerCase().contains(f) || r.getTelefono().toLowerCase().contains(f)
                     )
                     .collect(Collectors.toList());
 
@@ -351,9 +345,9 @@ public class RepartidoresView {
         txtId.clear();
         txtNombre.clear();
         txtMatricula.clear();
-        txtDireccion.clear();
+
         txtTelefono.clear();
-        txtNotas.clear();
+
         txtId.setDisable(false);
         tabla.getSelectionModel().clearSelection();
     }
@@ -378,10 +372,10 @@ public class RepartidoresView {
         // Validación rápida
         if (txtId.getText().isBlank() ||
                 txtNombre.getText().isBlank() ||
-                txtMatricula.getText().isBlank()) {
+                txtMatricula.getText().isBlank() || txtTelefono.getText().isBlank()) {
 
             mostrarAlerta("Campos obligatorios",
-                    "Debes rellenar ID, nombre y matrícula.");
+                    "Debes rellenar ID, nombre, matrícula y teléfono.");
             return;
         }
 
@@ -393,9 +387,9 @@ public class RepartidoresView {
             return;
         }
 
-        Repartidor c = new Repartidor(id,
+        Repartidor r = new Repartidor(id,
                 txtNombre.getText().trim(),
-                txtMatricula.getText().trim());
+                txtTelefono.getText().trim(), txtMatricula.getText().trim());
 
         // En el futuro podrías crear aquí también un DetalleRepartidor con:
         //   id, txtDireccion.getText(), txtTelefono.getText(), txtNotas.getText()
@@ -406,7 +400,7 @@ public class RepartidoresView {
 
             if (existente == null) {
                 // No existe → INSERT real
-                repartidorDAO.insert(c);
+                repartidorDAO.insert(r);
 
                 // TODO: cuando exista DetalleRepartidorDAO, aquí insertar también el detalle.
                 //  Ejemplo futuro:
@@ -418,9 +412,8 @@ public class RepartidoresView {
                 // TODO: cuando implementéis RepartidorDAO.update(Repartidor),
                 //  y DetalleRepartidorDAO.update(DetalleRepartidor),
                 //  llamad aquí a esos métodos (idealmente a través de RepartidorService).
-                mostrarAlerta("Actualizar pendiente",
-                        "El repartidor ya existe.\n" +
-                                "Más adelante aquí haremos UPDATE desde el DAO/Service.");
+                repartidorDAO.update(r);
+                mostrarInfo("Actualizado", "Repartidor actualizado correctamente.");
             }
 
             recargarDatos();

@@ -64,9 +64,9 @@ public class ComercialesView {
     private final TextField txtEmail = new TextField();
 
     // Campos de formulario (DetalleComercial) – por ahora solo visuales
-    private final TextField txtDireccion = new TextField();
+
     private final TextField txtTelefono  = new TextField();
-    private final TextField txtNotas     = new TextField();
+
 
     // Botones CRUD
     private final Button btnNuevo    = new Button("Nuevo");
@@ -135,20 +135,16 @@ public class ComercialesView {
                 new javafx.beans.property.SimpleStringProperty(c.getValue().getEmail()));
 
         // ===== Columnas “placeholder” para DetalleComercial =====
-        TableColumn<Comercial, String> colDireccion = new TableColumn<>("Dirección");
-        colDireccion.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(""));
+
 
         TableColumn<Comercial, String> colTelefono = new TableColumn<>("Teléfono");
         colTelefono.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(""));
+                new javafx.beans.property.SimpleStringProperty(c.getValue().getTelefono()));
 
-        TableColumn<Comercial, String> colNotas = new TableColumn<>("Notas");
-        colNotas.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(""));
+
 
         tabla.getColumns().addAll(colId, colNombre, colEmail,
-                colDireccion, colTelefono, colNotas);
+                colTelefono);
         tabla.setItems(datos);
 
         root.setCenter(tabla);
@@ -180,16 +176,14 @@ public class ComercialesView {
         form.add(txtEmail, 1, 2);
 
         // ----- DetalleComercial (solo UI, sin BD de momento) -----
-        txtDireccion.setPromptText("Dirección");
-        txtTelefono.setPromptText("Teléfono");
-        txtNotas.setPromptText("Notas");
 
-        form.add(new Label("Dirección:"), 0, 3);
-        form.add(txtDireccion, 1, 3);
-        form.add(new Label("Teléfono:"), 0, 4);
-        form.add(txtTelefono, 1, 4);
-        form.add(new Label("Notas:"), 0, 5);
-        form.add(txtNotas, 1, 5);
+        txtTelefono.setPromptText("Teléfono");
+
+
+
+        form.add(new Label("Teléfono:"), 0, 3);
+        form.add(txtTelefono, 1, 3);
+
 
         // Zona botones CRUD
         HBox botonesCrud = new HBox(10, btnNuevo, btnGuardar, btnBorrar, btnRecargar, btnExportarJson);
@@ -226,15 +220,16 @@ public class ComercialesView {
                 txtId.setText(String.valueOf(newSel.getId()));
                 txtNombre.setText(newSel.getNombre());
                 txtEmail.setText(newSel.getEmail());
+                txtTelefono.setText(newSel.getTelefono());
                 txtId.setDisable(true); // al editar, de momento, no dejamos cambiar el ID
 
                 // DetalleComercial (cuando exista DetalleComercialDAO se cargará desde BD)
                 // TODO: cuando implementéis DetalleComercialDAO, aquí:
                 //   - detalleDAO.findById(newSel.getId())
                 //   - rellenar txtDireccion, txtTelefono, txtNotas con sus valores
-                txtDireccion.clear();
-                txtTelefono.clear();
-                txtNotas.clear();
+
+
+
             }
         });
 
@@ -354,9 +349,9 @@ public class ComercialesView {
         txtId.clear();
         txtNombre.clear();
         txtEmail.clear();
-        txtDireccion.clear();
+
         txtTelefono.clear();
-        txtNotas.clear();
+
         txtId.setDisable(false);
         tabla.getSelectionModel().clearSelection();
     }
@@ -381,10 +376,10 @@ public class ComercialesView {
         // Validación rápida
         if (txtId.getText().isBlank() ||
                 txtNombre.getText().isBlank() ||
-                txtEmail.getText().isBlank()) {
+                txtEmail.getText().isBlank() || txtTelefono.getText().isBlank()) {
 
             mostrarAlerta("Campos obligatorios",
-                    "Debes rellenar ID, nombre y email.");
+                    "Debes rellenar ID, nombre, email y teléfono.");
             return;
         }
 
@@ -398,7 +393,7 @@ public class ComercialesView {
 
         Comercial c = new Comercial(id,
                 txtNombre.getText().trim(),
-                txtEmail.getText().trim());
+                txtEmail.getText().trim(),txtTelefono.getText().trim());
 
         // En el futuro podrías crear aquí también un DetalleComercial con:
         //   id, txtDireccion.getText(), txtTelefono.getText(), txtNotas.getText()
@@ -418,12 +413,8 @@ public class ComercialesView {
                 mostrarInfo("Insertado", "Comercial creado correctamente.");
             } else {
                 // Ya existe → aquí en el futuro iría un UPDATE.
-                // TODO: cuando implementéis ComercialDAO.update(Comercial),
-                //  y DetalleComercialDAO.update(DetalleComercial),
-                //  llamad aquí a esos métodos (idealmente a través de ComercialService).
-                mostrarAlerta("Actualizar pendiente",
-                        "El comercial ya existe.\n" +
-                                "Más adelante aquí haremos UPDATE desde el DAO/Service.");
+                comercialDAO.update(c);
+                mostrarInfo("Actualizado", "Comercial actualizado correctamente.");
             }
 
             recargarDatos();
